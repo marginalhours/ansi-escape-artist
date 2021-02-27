@@ -2,3 +2,11 @@
 - Formatters
 - Layout
 - Something something b64-encoded URL fragment 
+- Underline colours (?)
+- Blink (?)
+- List from https://docs.rs/ansi_term/0.12.1/ansi_term/struct.Style.html (?)
+- Generate program code 
+- Languages: C, C++, Shell, Haskell, ... 
+- User-selected escape sequence (octal / hex / unicode)
+- Windows support (?)
+- Your mental model is wrong. The escape code puts us into a mode where we eat a sequence of semicolon-separated bytes until we hit an "m"; these bytes do different things to the terminal. Needs to track it better. This is why 1;46 is the same as 46;1

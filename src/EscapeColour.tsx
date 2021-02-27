@@ -3,7 +3,7 @@ import React, { ChangeEvent, useState } from 'react';
 import { Language } from './constants';
 import { transformTextAddRawColourSequence } from './transforms';
 
-import { FG_4_BIT, BG_4_BIT } from './ansiColour';
+import { FG_4_BIT, BG_4_BIT, AnsiColour } from './ansiColour';
 import Picker from './Picker';
 
 import AnsiColor from './ansiColour';
@@ -13,30 +13,37 @@ interface ColourOptions {
   foreground: AnsiColor, 
   background: AnsiColor, 
   bold: boolean, 
-  underline: boolean
+  italic: boolean,
+  underline: boolean,
+  strikethrough: boolean
 };
 
-const transformTextAddHTMLColourMarkup = (options: ColourOptions): string => {
-  const { text, foreground, background, bold, underline} = options;
+const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element => {
+  const { text, foreground, background, bold, italic, underline, strikethrough } = options;
 
-  if (text === "") { return text; }
+  let result = (<span>{text}</span>);
 
-  let f = text;
+  if (text === "") { return result; }
 
-  if (bold) {
-    f = (<span style={{fontWeight: "bold"}}>{f}</span>);
-  }
-  if (underline) {
-    f = (<span style={{textDecoration: "underline"}}>{f}</span>);
-  }
-  if (foreground) {
-    f = (<span style={{color: foreground.rgb}}>{f}</span>); 
-  }
-  if (background) {
-    f = (<span style={{backgroundColor: background.rgb}}>{f}</span>);
+  const styles = {} as any;
+  
+  if (bold) { styles["fontWeight"] = "bold"; }
+  if (italic) { styles["fontStyle"] = "italic"; }
+  if (underline) { styles["textDecoration"] = "underline"; }
+ 
+  if (foreground) { styles["color"] = foreground.rgb; }
+  if (background) { styles["backgroundColor"] = background.rgb; }
+
+  result = <span style={styles}>{result}</span>;
+
+  // Handle strikethrough last, since it clashes with italic otherwise
+  if (strikethrough) { 
+    const strikeStyles = {fontStyle: "normal"} as any;
+    if (foreground) { strikeStyles["color"] = foreground.rgb; }
+    result = (<del style={strikeStyles}>{result}</del>); 
   }
 
-  return f;
+  return result;
 };
 
 const EscapeColour = () => {
@@ -45,9 +52,11 @@ const EscapeColour = () => {
   // Text formatting
   const [bold, setBold] = useState(false);
   const [underline, setUnderline] = useState(false);
+  const [italic, setItalic] = useState(false);
+  const [strikethrough, setStrikethrough] = useState(false);
   // Text colours
-  const [foreground, setForeground] = useState(false);
-  const [background, setBackground] = useState(false);
+  const [foreground, setForeground] = useState<AnsiColour | null>(null);
+  const [background, setBackground] = useState<AnsiColour | null>(null);
   // User text
   const [userText, setUserText] = useState('');
 
@@ -61,19 +70,44 @@ const EscapeColour = () => {
   };
 
   const toggleBold = () => {
-    setBold(!bold);
+    setBold(!bold);  
   }
 
+  const toggleItalic = () => {
+    setItalic(!italic);
+  }
+  
   const toggleUnderline = () => {
     setUnderline(!underline);
   }
-  
-  const handleForegroundChange = (newColour) => {
+
+  const toggleStrikethrough = () => {
+    setStrikethrough(!strikethrough);
+  }
+
+  const handleForegroundChange = (newColour: AnsiColour) => {
     setForeground(newColour);
   }
 
-  const handleBackgroundChange = (newColour) => {
+  const handleBackgroundChange = (newColour: AnsiColour) => {
     setBackground(newColour);
+  }
+
+  const handleLanguageChange = (event) => {
+    setLanguage(event.target.value as Language);
+  }
+
+  const getCommandForLanguage = (language: Language) => {
+    switch(+language) {
+      case Language.Python:
+        return "$ python main.py"
+      case Language.Rust: 
+        return "$ rustc main.rs && ./main"
+      case Language.Golang:
+        return "$ go run main.go"
+      case Language.JavaScript:
+        return "$ node main.js"
+    }
   }
 
   const copyOutput = () => {
@@ -97,20 +131,16 @@ const EscapeColour = () => {
       })();
   }
 
-  const getLanguages = () => {
-    return Object.keys(Language).filter(key => !isNaN(Number(Language[key]))).map(key => {
-      return (<option key={key} value={Language[key]}>{key}</option>)
-    })
-  }
-
   return (
     <main className="flex flex-row w-full">
-      <div className="flex w-1/5 p-2">
+      <div className="w-1/5 p-2">
         <select>
           <option value='-1'>Select a preset...</option>
         </select>
-        <select>
-          {getLanguages()}
+        <select onChange={handleLanguageChange}>
+          {Object.keys(Language).filter(key => !isNaN(Number(Language[key]))).map(key => {
+            return (<option key={key} value={Language[key]}>{key}</option>)
+          })}
         </select>
       </div>
       <div className="flex flex-col w-2/5 p-2">
@@ -123,22 +153,32 @@ const EscapeColour = () => {
           <Picker onChange={handleForegroundChange} colours={FG_4_BIT}/>
           <label className="inline uppercase text-sm">Background</label>
           <Picker onChange={handleBackgroundChange} colours={BG_4_BIT}/>
-          <label className="inline uppercase text-sm">Underline</label>
-          <input className="mx-2" type='checkbox' checked={underline} onChange={toggleUnderline}></input>
           <label className="inline uppercase text-sm">Bold</label>
           <input className="mx-2" type='checkbox' checked={bold} onChange={toggleBold}></input>
+          <label className="inline uppercase text-sm">Italic</label>
+          <input className="mx-2" type='checkbox' checked={italic} onChange={toggleItalic}></input>
+          <label className="inline uppercase text-sm">Underline</label>
+          <input className="mx-2" type='checkbox' checked={underline} onChange={toggleUnderline}></input>
+          <label className="inline uppercase text-sm">Strikethrough</label>
+          <input className="mx-2" type='checkbox' checked={strikethrough} onChange={toggleStrikethrough}></input>
         </div>
         <div className="relative">
+          <label className="inline uppercase text-sm">Escape Sequence</label>
           <div className="click-handler absolute top-0 left-0 w-full h-full" onClick={copyOutput}></div>
           <input 
             className="raw-output w-full h-12 m-2 font-mono border rounded px-4 py-2 w-full" 
             type="text" 
-            value={transformTextAddRawColourSequence({ text: userText, foreground: foreground, background: background, bold: bold, underline: underline, language: language })} 
+            onChange={() => {}}
+            value={transformTextAddRawColourSequence({ text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language })} 
             />
         </div>
-        <div className="preview-output w-full h-48 m-2 font-mono bg-gray-800 rounded p-4 text-white">
-          <output>{transformTextAddHTMLColourMarkup({ text: userText, foreground: foreground, background: background, bold: bold, underline: underline})}</output>
+        <div className="preview-output relative w-full h-48 m-2 font-mono bg-gray-800 rounded p-12 text-white">
+          <output className="block">{getCommandForLanguage(language as Language)}</output>
+          <output className="block">{transformTextAddHTMLColourMarkup({ text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough })}</output>
         </div>
+      </div>
+      <div className="flex flex-col w-2/5 p-2">
+        
       </div>
     </main>
     )
