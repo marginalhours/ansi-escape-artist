@@ -1,5 +1,5 @@
 {
-  "name": "escape-artist",
+  "name": "ansi-escape-artist",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",

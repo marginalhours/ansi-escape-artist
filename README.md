@@ -1,6 +1,6 @@
-# Escape Artist
+# Ansi Escape Artist
 
-`Escape Artist` is a small webapp for generating ANSI escape sequences quickly, so that adding colourful output to your shell scripts / one-off programs / anything is as lightweight as possible. Rather an adding a dependency or wading through the docs, just click a few boxes and copy-and-paste the result. 
+`Ansi Escape Artist` is a small webapp for generating ANSI escape sequences quickly, so that adding colourful output to your shell scripts / one-off programs / anything is as lightweight as possible. Rather an adding a dependency or wading through the docs, just click a few boxes and copy-and-paste the result. 
 
 It currently supports: 
 

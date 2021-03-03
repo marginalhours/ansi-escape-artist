@@ -4,7 +4,7 @@ import { Language } from './constants';
 import { transformTextAddRawColourSequence } from './transforms';
 
 import { FG_4_BIT, BG_4_BIT, AnsiColour } from './ansiColour';
-import Picker from './Picker';
+import FourBitPicker from './FourBitPicker';
 
 import AnsiColor from './ansiColour';
 
@@ -30,6 +30,8 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
   if (bold) { styles["fontWeight"] = "bold"; }
   if (italic) { styles["fontStyle"] = "italic"; }
   if (underline) { styles["textDecoration"] = "underline"; }
+
+  console.log(foreground);
  
   if (foreground) { styles["color"] = foreground.rgb; }
   if (background) { styles["backgroundColor"] = background.rgb; }
@@ -94,7 +96,7 @@ const EscapeColour = () => {
   }
 
   const handleLanguageChange = (event) => {
-    setLanguage(event.target.value as Language);
+    setLanguage(event.target.value);
   }
 
   const getCommandForLanguage = (language: Language) => {
@@ -149,10 +151,24 @@ const EscapeColour = () => {
             <label className="uppercase text-sm block">Enter Text</label>
             <input className="border rounded px-4 py-2 w-full" type='text' placeholder='Enter your text...' onChange={onUserTextChange}></input>
           </div>
-          <label className="inline uppercase text-sm">Foreground</label> 
-          <Picker onChange={handleForegroundChange} colours={FG_4_BIT}/>
-          <label className="inline uppercase text-sm">Background</label>
-          <Picker onChange={handleBackgroundChange} colours={BG_4_BIT}/>
+          <div>
+            <label className="inline uppercase text-sm">Foreground</label> 
+            <label className="inline uppercase text-sm">4-bit</label> 
+            <FourBitPicker onChange={handleForegroundChange} colours={FG_4_BIT} isBright={bold}/>
+            <label className="inline uppercase text-sm">8-bit</label> 
+            <FourBitPicker onChange={handleForegroundChange} colours={FG_4_BIT} isBright={bold}/>
+            <label className="inline uppercase text-sm">24-bit</label>
+            <FourBitPicker onChange={handleForegroundChange} colours={FG_4_BIT} isBright={bold}/>
+          </div>
+          <div>
+            <label className="inline uppercase text-sm">Background</label>
+            <label className="inline uppercase text-sm">4-bit</label> 
+            <FourBitPicker onChange={handleBackgroundChange} colours={BG_4_BIT} isBright={bold}/>
+            <label className="inline uppercase text-sm">8-bit</label> 
+            <FourBitPicker onChange={handleBackgroundChange} colours={BG_4_BIT} isBright={bold}/>
+            <label className="inline uppercase text-sm">24-bit</label>
+            <FourBitPicker onChange={handleBackgroundChange} colours={BG_4_BIT} isBright={bold}/>
+          </div>
           <label className="inline uppercase text-sm">Bold</label>
           <input className="mx-2" type='checkbox' checked={bold} onChange={toggleBold}></input>
           <label className="inline uppercase text-sm">Italic</label>

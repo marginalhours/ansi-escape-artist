@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import Picker from './Picker';
+import Picker from './FourBitPicker';
 
 const EscapeMovement = () => {
 return (

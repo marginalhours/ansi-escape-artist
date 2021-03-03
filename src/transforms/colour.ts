@@ -15,9 +15,21 @@ interface RawColourOptions extends ColourOptions {
     language: Language
 }
 
+class EscapeSet {
+    unicode: string;
+    octal: string;
+    hex: string;
+
+    constructor(unicode: string, octal: string, hex: string){
+        this.unicode = unicode;
+        this.octal = octal;
+        this.hex = hex;
+    }
+}
+
 
 const ESCAPES = {
-    [Language.Python]: String.raw`\u001b[`,
+    [Language.Python]: new EscapeSet(String.raw`\u001b[`, String.raw`\033[`, String.raw`\x1b[`),
     [Language.Rust]: String.raw`\x1b[`,
     [Language.Golang]: String.raw`\x1b[`,
 };
@@ -27,43 +39,50 @@ const ESCAPES = {
 export const transformTextAddRawColourSequence = (options: RawColourOptions): string => {
     const { text, foreground, background, bold, italic, underline, strikethrough, language } = options; 
 
-    const escape = ESCAPES[language];
+    const escape = ESCAPES[language].octal;
 
     if (text === "") { return text; }
 
-    let f = text; 
-    let needsReset = false;
+    let prefix = "";
+    let suffix = ""; 
 
-    if (bold) { 
-        needsReset = true; 
-        f = String.raw`${escape}1m${f}`;
+    let code = "";
+
+    if (bold) {  
+        code += "1;";
     }
     if (italic) {
-        needsReset = true;
-        f = String.raw`${escape}3m${f}`;
+        code += "3;";
     }
-    if (underline) { 
-        needsReset = true;
-        f = String.raw`${escape}4m${f}`;
+    if (underline) {
+        code += "4;";
     }
     if (strikethrough) {
-        needsReset = true;
-        f = String.raw`${escape}9m${f}`;
+        code += "9;";
     }
 
     if (foreground) {
-        needsReset = true;
-        f = String.raw`${escape}${foreground.ansi}m${f}`;
+        // Take into account that 1; may already have been added by bold (for 4-bit colours)
+        if (bold && foreground.isBright) {
+            code += foreground.ansi.slice(2);
+        } else {
+            code += foreground.ansi;
+        }
     }
     if (background) {
-        needsReset = true;
-        f = String.raw`${escape}${background.ansi}m${f}`;
+        // Take into account that 1; may already have been added by bold (for 4-bit colours)
+        if (bold && background.isBright) {
+            code += background.ansi.slice(2);
+        } else {
+            code += background.ansi;
+        }
     }
 
-    if (needsReset) {
-        f = String.raw`${f}${escape}0m`; // reset
+    if (code) {
+        prefix = String.raw`${escape}${code}m`;
+        suffix = String.raw`${escape}0m`;
     }
 
-    return f;
+    return String.raw`${prefix}${text}${suffix}`;
 };
 
