@@ -1,10 +1,11 @@
 import React, { ChangeEvent, useState } from 'react';
 
-import { Language } from './constants';
+import { Language, ColourType } from './constants';
 import { transformTextAddRawColourSequence } from './transforms';
 
-import { FG_4_BIT, BG_4_BIT, AnsiColour } from './ansiColour';
+import { FG_4_BIT, BG_4_BIT, FG_8_BIT, BG_8_BIT, AnsiColour } from './ansiColour';
 import FourBitPicker from './FourBitPicker';
+import EightBitPicker from './EightBitPicker';
 
 import AnsiColor from './ansiColour';
 
@@ -51,6 +52,9 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
 const EscapeColour = () => {
   // Language to generate escape sequences for
   const [language, setLanguage] = useState(Language.Python);
+  // Active FG/BG pickers
+  const [foregroundColourType, setForegroundColourType] = useState(ColourType.None);
+  const [backgroundColourType, setBackgroundColourType] = useState(ColourType.None);
   // Text formatting
   const [bold, setBold] = useState(false);
   const [underline, setUnderline] = useState(false);
@@ -87,12 +91,28 @@ const EscapeColour = () => {
     setStrikethrough(!strikethrough);
   }
 
-  const handleForegroundChange = (newColour: AnsiColour) => {
+  const handleForegroundChange = (newColour: AnsiColour, colourType: ColourType) => {
     setForeground(newColour);
+    setForegroundColourType(colourType);
   }
 
-  const handleBackgroundChange = (newColour: AnsiColour) => {
+  const handleBackgroundChange = (newColour: AnsiColour, colourType: ColourType) => {
     setBackground(newColour);
+    setBackgroundColourType(colourType);
+  }
+
+  const handleForegroundReset = (colourType: ColourType) => {
+    if (colourType == foregroundColourType) {
+      setForeground(null);
+      setForegroundColourType(ColourType.None);
+    }
+  }
+
+  const handleBackgroundReset = (colourType: ColourType) => {
+    if (colourType === backgroundColourType) {
+      setBackground(null);
+      setBackgroundColourType(ColourType.None);
+    }
   }
 
   const handleLanguageChange = (event) => {
@@ -154,20 +174,18 @@ const EscapeColour = () => {
           <div>
             <label className="inline uppercase text-sm">Foreground</label> 
             <label className="inline uppercase text-sm">4-bit</label> 
-            <FourBitPicker onChange={handleForegroundChange} colours={FG_4_BIT} isBright={bold}/>
+            <FourBitPicker onChange={handleForegroundChange} onReset={handleForegroundReset} colours={FG_4_BIT} isBright={bold} isActive={foregroundColourType === ColourType.FourBit}/>
             <label className="inline uppercase text-sm">8-bit</label> 
-            <FourBitPicker onChange={handleForegroundChange} colours={FG_4_BIT} isBright={bold}/>
+            <EightBitPicker onChange={handleForegroundChange} onReset={handleForegroundReset} colours={FG_8_BIT} isActive={foregroundColourType === ColourType.EightBit}/>
             <label className="inline uppercase text-sm">24-bit</label>
-            <FourBitPicker onChange={handleForegroundChange} colours={FG_4_BIT} isBright={bold}/>
           </div>
           <div>
             <label className="inline uppercase text-sm">Background</label>
             <label className="inline uppercase text-sm">4-bit</label> 
-            <FourBitPicker onChange={handleBackgroundChange} colours={BG_4_BIT} isBright={bold}/>
+            <FourBitPicker onChange={handleBackgroundChange} onReset={handleBackgroundReset} colours={BG_4_BIT} isBright={false} isActive={backgroundColourType === ColourType.FourBit}/>
             <label className="inline uppercase text-sm">8-bit</label> 
-            <FourBitPicker onChange={handleBackgroundChange} colours={BG_4_BIT} isBright={bold}/>
+            <EightBitPicker onChange={handleBackgroundChange} onReset={handleBackgroundReset} colours={BG_8_BIT} isActive={backgroundColourType === ColourType.EightBit}/>
             <label className="inline uppercase text-sm">24-bit</label>
-            <FourBitPicker onChange={handleBackgroundChange} colours={BG_4_BIT} isBright={bold}/>
           </div>
           <label className="inline uppercase text-sm">Bold</label>
           <input className="mx-2" type='checkbox' checked={bold} onChange={toggleBold}></input>
@@ -180,13 +198,24 @@ const EscapeColour = () => {
         </div>
         <div className="relative">
           <label className="inline uppercase text-sm">Escape Sequence</label>
-          <div className="click-handler absolute top-0 left-0 w-full h-full" onClick={copyOutput}></div>
-          <input 
-            className="raw-output w-full h-12 m-2 font-mono border rounded px-4 py-2 w-full" 
-            type="text" 
-            onChange={() => {}}
-            value={transformTextAddRawColourSequence({ text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language })} 
-            />
+          <div className="relative m-2">
+            <input 
+              className="raw-output w-full h-12 font-mono border rounded px-4 py-2 w-full" 
+              type="text" 
+              onChange={() => {}}
+              value={transformTextAddRawColourSequence({ text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language })} 
+              />
+            <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
+              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{"backgroundColor": "rgba(0, 0, 0, 0.05)"}}  onClick={copyOutput}>
+                <span className="block px-2 bg-white border rounded">click to copy</span>
+              </div>
+            </div>
+            <div className="absolute top-0 right-0 h-11 flex items-center justify-center px-4 pt-.5 bg-white mt-0.5 mr-0.5">
+                <span className="m-0.5 text-sm uppercase font-bold text-gray-500 bg-white">OCT</span>
+                <span className="m-0.5 text-sm uppercase font-bold text-gray-500 bg-white">HEX</span>
+                <span className="m-0.5 text-sm uppercase font-bold text-gray-500 bg-white">UNI</span>
+            </div>
+          </div>
         </div>
         <div className="preview-output relative w-full h-48 m-2 font-mono bg-gray-800 rounded p-12 text-white">
           <output className="block">{getCommandForLanguage(language as Language)}</output>

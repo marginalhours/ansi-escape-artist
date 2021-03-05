@@ -4,3 +4,10 @@ export enum Language {
     Golang = 2,
     JavaScript = 3
 };
+
+export enum ColourType {
+    None = 0,
+    FourBit = 1,
+    EightBit = 2,
+    RGB = 3
+};

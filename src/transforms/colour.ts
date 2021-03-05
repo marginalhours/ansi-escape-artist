@@ -46,40 +46,35 @@ export const transformTextAddRawColourSequence = (options: RawColourOptions): st
     let prefix = "";
     let suffix = ""; 
 
-    let code = "";
+    let code = [];
 
     if (bold) {  
-        code += "1;";
+        code.push(1);
     }
     if (italic) {
-        code += "3;";
+        code.push(3);
     }
     if (underline) {
-        code += "4;";
+        code.push(4);
     }
     if (strikethrough) {
-        code += "9;";
+        code.push(9);
     }
 
     if (foreground) {
         // Take into account that 1; may already have been added by bold (for 4-bit colours)
         if (bold && foreground.isBright) {
-            code += foreground.ansi.slice(2);
+            code = code.concat(...foreground.ansi.slice(1));
         } else {
-            code += foreground.ansi;
+            code = code.concat(...foreground.ansi);
         }
     }
     if (background) {
-        // Take into account that 1; may already have been added by bold (for 4-bit colours)
-        if (bold && background.isBright) {
-            code += background.ansi.slice(2);
-        } else {
-            code += background.ansi;
-        }
+        code = code.concat(...background.ansi);
     }
 
-    if (code) {
-        prefix = String.raw`${escape}${code}m`;
+    if (code.length > 0) {
+        prefix = String.raw`${escape}${code.join(';')}m`;
         suffix = String.raw`${escape}0m`;
     }
 

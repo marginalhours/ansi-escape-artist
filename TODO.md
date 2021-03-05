@@ -1,5 +1,3 @@
-- Handle bold / palette-swap link
-- Code generation 
 - Formatters
 - Layout
 - Something something b64-encoded URL fragment 
@@ -10,4 +8,5 @@
 - Languages: C, C++, Shell, Haskell, ... 
 - User-selected escape sequence (octal / hex / unicode)
 - Windows support (?)
-- Your mental model is wrong. The escape code puts us into a mode where we eat a sequence of semicolon-separated bytes until we hit an "m"; these bytes do different things to the terminal. Needs to track it better. This is why 1;46 is the same as 46;1. 
+- Handle 90 and 100 colours (brights-without-bolding)
+- Presets (box-drawing, blocks, braille spinners)
