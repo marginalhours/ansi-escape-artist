@@ -6,7 +6,8 @@
 - List from https://docs.rs/ansi_term/0.12.1/ansi_term/struct.Style.html (?)
 - Generate program code 
 - Languages: C, C++, Shell, Haskell, ... 
-- User-selected escape sequence (octal / hex / unicode)
 - Windows support (?)
-- Handle 90 and 100 colours (brights-without-bolding)
+- Handle 90 and 100 colours (4-bit brights-without-bolding)
 - Presets (box-drawing, blocks, braille spinners)
+- blink, dim, overline (?)
+- Figure out what to do about bright/bold confusion (cf. KiTTY etc)

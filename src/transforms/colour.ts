@@ -1,4 +1,4 @@
-import { Language } from '../constants';
+import { EscapeType, Language } from '../constants';
 import AnsiColor from '../ansiColour';
 
 interface ColourOptions { 
@@ -8,7 +8,8 @@ interface ColourOptions {
     bold: boolean, 
     underline: boolean,
     italic: boolean,
-    strikethrough: boolean
+    strikethrough: boolean,
+    escapeType: EscapeType
 };
 
 interface RawColourOptions extends ColourOptions {
@@ -16,30 +17,29 @@ interface RawColourOptions extends ColourOptions {
 }
 
 class EscapeSet {
-    unicode: string;
-    octal: string;
-    hex: string;
+    [EscapeType.Octal]: string;
+    [EscapeType.Hex]: string;
+    [EscapeType.Unicode]: string;
 
-    constructor(unicode: string, octal: string, hex: string){
-        this.unicode = unicode;
-        this.octal = octal;
-        this.hex = hex;
+    constructor(octal: string, hex: string, unicode: string){
+        this[EscapeType.Octal] = octal;
+        this[EscapeType.Hex] = hex;
+        this[EscapeType.Unicode] = unicode;
     }
 }
 
-
 const ESCAPES = {
-    [Language.Python]: new EscapeSet(String.raw`\u001b[`, String.raw`\033[`, String.raw`\x1b[`),
-    [Language.Rust]: String.raw`\x1b[`,
-    [Language.Golang]: String.raw`\x1b[`,
+    [Language.Python]: new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u001b[`),
+    [Language.Rust]: new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u{001b}[`),
+    [Language.Golang]: new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u001b[`),
 };
 
 
 
 export const transformTextAddRawColourSequence = (options: RawColourOptions): string => {
-    const { text, foreground, background, bold, italic, underline, strikethrough, language } = options; 
+    const { text, foreground, background, bold, italic, underline, strikethrough, language, escapeType } = options; 
 
-    const escape = ESCAPES[language].octal;
+    const escape = ESCAPES[+language][escapeType];
 
     if (text === "") { return text; }
 

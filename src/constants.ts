@@ -11,3 +11,9 @@ export enum ColourType {
     EightBit = 2,
     RGB = 3
 };
+
+export enum EscapeType {
+    Octal = 0,
+    Hex = 1,
+    Unicode = 2
+};
