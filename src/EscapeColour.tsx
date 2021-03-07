@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 
 import { Language, ColourType, EscapeType } from './constants';
-import { transformTextAddRawColourSequence } from './transforms';
+import { transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
 
 import { FG_4_BIT, BG_4_BIT, FG_8_BIT, BG_8_BIT, AnsiColour } from './ansiColour';
 
@@ -53,7 +53,7 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
 
 const EscapeColour = () => {
   // Language to generate escape sequences for
-  const [language, setLanguage] = useState(Language.Python);
+  const [language, setLanguage] = useState(Language.Python3);
   // Active FG/BG pickers
   const [foregroundColourType, setForegroundColourType] = useState(ColourType.None);
   const [backgroundColourType, setBackgroundColourType] = useState(ColourType.None);
@@ -131,7 +131,7 @@ const EscapeColour = () => {
 
   const getCommandForLanguage = (language: Language) => {
     switch (+language) {
-      case Language.Python:
+      case Language.Python3:
         return "$ python main.py"
       case Language.Rust:
         return "$ rustc main.rs && ./main"
@@ -161,6 +161,8 @@ const EscapeColour = () => {
       else if ('empty' in selection) selection.empty();
     })();
   }
+
+  const transformOptions = { text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language, escapeType: escapeType };
 
   return (
     <main className="flex flex-row w-full">
@@ -219,13 +221,6 @@ const EscapeColour = () => {
             })}
           </select>
         </Box>
-        <Box>
-          <Label text="Preview" />
-          <div className="preview-output relative w-full h-48 font-mono bg-gray-800 rounded p-12 text-white">
-            <output className="block">{getCommandForLanguage(language as Language)}</output>
-            <output className="block">{transformTextAddHTMLColourMarkup({ text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough })}</output>
-          </div>
-        </Box>
       </div>
       <div className="flex flex-col w-2/5 p-2">
         <Box>
@@ -235,7 +230,7 @@ const EscapeColour = () => {
               className="raw-output w-full h-12 font-mono border rounded px-4 py-2 w-full"
               type="text"
               onChange={() => { }}
-              value={transformTextAddRawColourSequence({ text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language, escapeType: escapeType })}
+              value={transformTextAddRawColourSequence(transformOptions)}
             />
             <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
               <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(0, 0, 0, 0.05)" }} onClick={copyOutput}>
@@ -251,6 +246,16 @@ const EscapeColour = () => {
         </Box>
         <Box>
           <Label text="Example Code"/>
+          <div className="mono whitespace-pre text-white bg-gray-900 rounded p-4">
+            {transformTextToCodeSample(transformOptions)}
+          </div>
+        </Box>
+        <Box>
+          <Label text="Preview" />
+          <div className="preview-output relative w-full h-48 font-mono bg-gray-800 rounded p-12 text-white">
+            <output className="block">{getCommandForLanguage(language as Language)}</output>
+            <output className="block">{transformTextAddHTMLColourMarkup(transformOptions)}</output>
+          </div>
         </Box>
       </div>
     </main>
