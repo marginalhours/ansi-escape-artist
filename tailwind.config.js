@@ -17,6 +17,6 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  variants: { extend: { translate: ['active']}},
   plugins: []
 };

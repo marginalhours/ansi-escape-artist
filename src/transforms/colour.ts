@@ -81,8 +81,6 @@ export const transformTextToCodeSample = (options: RawColourOptions): string => 
     const escape = ESCAPES[+language][escapeType];
     const template = CODE_TEMPLATES[+language];
 
-    if (text === "") { return text; }
-
     let prefix = "";
     let suffix = ""; 
 

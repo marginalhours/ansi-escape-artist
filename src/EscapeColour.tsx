@@ -142,8 +142,8 @@ const EscapeColour = () => {
     }
   }
 
-  const copyOutput = () => {
-    const copyText = document.querySelector(".raw-output") as HTMLInputElement;
+  const copyFromInput = (selector: string) => {
+    const copyText = document.querySelector(selector) as HTMLInputElement;
     /* Select the text field */
     copyText.select();
     copyText.setSelectionRange(0, 99999); /* For mobile devices */
@@ -161,6 +161,34 @@ const EscapeColour = () => {
       else if ('empty' in selection) selection.empty();
     })();
   }
+
+  const copyFromDiv = (selector: string) => {
+    const copyText = document.querySelector(selector) as HTMLDivElement;
+    /* Select the text field */
+    if (document.selection) {
+      var range = document.body.createTextRange();
+      range.moveToElementText(copyText);
+      range.select().createTextRange();
+    } else if (window.getSelection) {
+      var range = document.createRange();
+      range.selectNode(copyText);
+      window.getSelection().addRange(range);
+    }
+
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+
+    (function deselect() {
+      var selection = ('getSelection' in window)
+        ? window.getSelection()
+        : ('selection' in document)
+          ? document.selection
+          : null;
+      if ('removeAllRanges' in selection) selection.removeAllRanges();
+      else if ('empty' in selection) selection.empty();
+    })();
+  }
+
 
   const transformOptions = { text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language, escapeType: escapeType };
 
@@ -188,8 +216,7 @@ const EscapeColour = () => {
               title="Text"
               handleChange={handleForegroundChange}
               handleReset={handleForegroundReset}
-              fourBitColours={FG_4_BIT}
-              eightbitColours={FG_8_BIT}
+              isForeground={true}
               isBright={bold}
               activeColourType={foregroundColourType}
             />
@@ -197,8 +224,7 @@ const EscapeColour = () => {
               title="Background"
               handleChange={handleBackgroundChange}
               handleReset={handleBackgroundReset}
-              fourBitColours={BG_4_BIT}
-              eightbitColours={BG_8_BIT}
+              isForeground={false}
               isBright={bold}
               activeColourType={backgroundColourType}
             />
@@ -233,8 +259,8 @@ const EscapeColour = () => {
               value={transformTextAddRawColourSequence(transformOptions)}
             />
             <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
-              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(0, 0, 0, 0.05)" }} onClick={copyOutput}>
-                <span className="block px-2 bg-white border rounded">click to copy sequence</span>
+              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={() => copyFromInput(".raw-output")}>
+                <span className="block px-2 bg-white hover:bg-gray-100 border rounded transform active:translate-y-0.5 select-none ">click to copy sequence</span>
               </div>
             </div>
             <div className="absolute top-0 right-0 h-11 flex flex-row items-center justify-between w-min px-4 pt-.5 bg-white mt-0.5 mr-0.5 border-l">
@@ -246,8 +272,15 @@ const EscapeColour = () => {
         </Box>
         <Box>
           <Label text="Example Code"/>
-          <div className="mono whitespace-pre text-white bg-gray-900 rounded p-4">
-            {transformTextToCodeSample(transformOptions)}
+          <div className="relative mb-2 rounded">
+            <div className="mono whitespace-pre text-white bg-gray-900 rounded p-4 raw-code-sample">
+              {transformTextToCodeSample(transformOptions)}
+            </div>
+            <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
+              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={() => copyFromDiv(".raw-code-sample")}>
+                <span className="block px-2 bg-white hover:bg-gray-100 border rounded transform active:translate-y-0.5 select-none">click to copy code</span>
+              </div>
+            </div>
           </div>
         </Box>
         <Box>
