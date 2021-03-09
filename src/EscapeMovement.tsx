@@ -1,20 +1,28 @@
 import React, { useState } from 'react'
 
-import Picker from './FourBitPicker';
+import Box from './Box';
+import Label from './Label';
+import OutputEscapeSequence from './OutputEscapeSequence';
 
 const EscapeMovement = () => {
 return (
-  <main>
-    <select>
-      <option value='-1'>Select a preset...</option>
-    </select>
-    <input type='text' placeholder='Enter your text...'></input>
-    <label>Foreground:</label> <Picker></Picker>
-    <label>Background:</label> <Picker></Picker>
-    <label>Bold</label><input type='checkbox'></input>
-    <label>Underline</label><input type='checkbox'></input>
-    <output>Sequence</output>
-    <output>Preview</output>
+  <main className="flex flex-row">
+    <div className="w-1/2">
+    <Box>
+      <Label text="Move Cursor" />
+    </Box>
+    <Box>
+      <Label text="Change Line" />
+    </Box>
+    <Box>
+      <Label text="Clear" />
+    </Box>
+    </div>
+    <div className="w-1/2">
+      <Box>
+        <OutputEscapeSequence/>
+      </Box>
+    </div>
   </main>
   )
 };

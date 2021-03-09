@@ -51,3 +51,8 @@ input[type=checkbox].hide-checkbox:checked + span.checkbox-target::after{
     align-items: center;
     justify-content: center;
 }
+
+.code-sample {
+    background-color: rgb(31, 41, 55) !important;
+    border-radius: 0.5rem !important;
+}

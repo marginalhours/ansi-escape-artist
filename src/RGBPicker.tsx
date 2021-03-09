@@ -27,10 +27,13 @@ type ResetCallback = (a: ColourType) => void;
  */
 function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: ChangeCallback, onReset: ResetCallback, isActive: boolean, isForeground: boolean }) {
   const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
-  const [selectedColour, setSelectedColour] = useState<AnsiColour | null>(null);
-  const [r, setR] = useState(0);
-  const [g, setG] = useState(0);
-  const [b, setB] = useState(0);
+  const escape = isForeground ? [38, 2] : [48, 2];
+  const c = new AnsiColour([...escape, 127, 127, 127], `rgb(127, 127, 127)`, false);
+
+  const [selectedColour, setSelectedColour] = useState<AnsiColour | null>(c);
+  const [r, setR] = useState(127);
+  const [g, setG] = useState(127);
+  const [b, setB] = useState(127);
 
   const showPicker = () => {
     setIsComponentVisible(true);
