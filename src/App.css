@@ -27,6 +27,8 @@ select:focus {
     box-shadow: inset 0 1px 2px rgba(0,0,0,.075),0 0 5px rgba(69,122,187,.5)
 }
 
+/* Custom checkbox */
+
 input[type=checkbox].hide-checkbox {
     position: relative;
     left: -999em; /* hide the real checkbox */
@@ -51,6 +53,41 @@ input[type=checkbox].hide-checkbox:checked + span.checkbox-target::after{
     align-items: center;
     justify-content: center;
 }
+
+/* Custom radio */
+
+input[type=radio].hide-radio {
+    position: relative;
+    left: -999em; /* hide the real radio */
+}
+    
+input[type=radio].hide-radio + span.radio-target {
+    content: "";
+    display: block;
+    background: #fff;
+}
+
+input[type=radio].hide-radio:checked + span.radio-target {
+    background: rgb(49, 46, 129);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type=radio].hide-radio:checked + span.radio-target::after{
+    content: "";
+    font-weight: bold;
+    font-size: 1.25em;
+    line-height: 0;
+    height: 6px;
+    width: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+}
+
+/* Override code sample background to match 'terminal' */
 
 .code-sample {
     background-color: rgb(31, 41, 55) !important;
