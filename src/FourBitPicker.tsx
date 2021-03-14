@@ -31,11 +31,11 @@ function FourBitPicker({ onChange, onReset, colours, isBright, isActive }: { onC
 
   // Update the output colour using onChange() when isBright flips too
   useEffect(() => {
-    if (isComponentVisible && selectedColourIndex !== -1) {
+    if (selectedColourIndex !== -1) {
       const colour = (isBright ? colours.bright : colours.normal)[selectedColourIndex];
       onChange(colour, ColourType.FourBit);
     }
-  }, [isBright]);
+  }, [isBright, selectedColourIndex]);
 
   const toggleShowPicker = () => {
     setIsComponentVisible(!isComponentVisible);
@@ -45,9 +45,9 @@ function FourBitPicker({ onChange, onReset, colours, isBright, isActive }: { onC
     event.stopPropagation();
     toggleShowPicker();
     const index = parseInt(event.target.dataset.index as string) as number;
-    const colour = (isBright ? colours.bright : colours.normal)[index];
+    // const colour = (isBright ? colours.bright : colours.normal)[index];
     setSelectedColourIndex(index);
-    onChange(colour, ColourType.FourBit);
+    // onChange(colour, ColourType.FourBit);
   }
 
   const handleReset = (event: React.ChangeEvent<HTMLDivElement>) => {

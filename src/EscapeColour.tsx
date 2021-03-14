@@ -54,6 +54,7 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
 const EscapeColour = () => {
   // Language to generate escape sequences for
   const [language, setLanguage] = useState(Language.Python3);
+  const [escapeType, setEscapeType] = useState(EscapeType.Octal);
   // Active FG/BG pickers
   const [foregroundColourType, setForegroundColourType] = useState(ColourType.None);
   const [backgroundColourType, setBackgroundColourType] = useState(ColourType.None);
@@ -67,8 +68,7 @@ const EscapeColour = () => {
   const [background, setBackground] = useState<AnsiColour | null>(null);
   // User text
   const [userText, setUserText] = useState('');
-  // Active escape type 
-  const [escapeType, setEscapeType] = useState(EscapeType.Octal);
+
 
   /**
    * Handle the user entering text
@@ -210,7 +210,7 @@ const EscapeColour = () => {
               handleChange={handleBackgroundChange}
               handleReset={handleBackgroundReset}
               isForeground={false}
-              isBright={bold}
+              isBright={false}
               activeColourType={backgroundColourType}
             />
           </div>

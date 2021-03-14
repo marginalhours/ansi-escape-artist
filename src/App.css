@@ -93,3 +93,51 @@ input[type=radio].hide-radio:checked + span.radio-target::after{
     background-color: rgb(31, 41, 55) !important;
     border-radius: 0.5rem !important;
 }
+
+.direction-arrow {
+    user-select: none;
+    outline: none;
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    font-size: 24px;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    position: absolute;
+    top: calc(50% - 12px);
+    left: calc(50% - 12px);
+    transform-origin: 50%;
+}
+
+.direction-arrow.top {
+    transform: translate(0, -3rem);
+}
+
+.direction-arrow.bottom {
+    transform: translate(0, 3rem) rotateZ(180deg);
+}
+
+.direction-arrow.left {
+    transform: translate(-3rem, 0) rotateZ(270deg);
+}
+
+.direction-arrow.right {
+    transform: translate(3rem, 0) rotateZ(90deg);
+}
+
+.direction-arrow.top-left {
+    transform: translate(-2rem, -2rem) rotateZ(315deg);
+}
+
+.direction-arrow.top-right {
+    transform: translate(2rem, -2rem) rotateZ(45deg);
+}
+
+.direction-arrow.bottom-left {
+    transform: translate(-2rem, 2rem) rotateZ(225deg);
+}
+
+.direction-arrow.bottom-right {
+    transform: translate(2rem, 2rem) rotateZ(135deg);
+}
