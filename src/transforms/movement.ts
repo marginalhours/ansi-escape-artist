@@ -11,32 +11,37 @@ const transformMovement = (options) => {
       return "";
     case MovementType.LinesRelative:
       return moveLinesRelative(options.y, escape);
+    case MovementType.AbsoluteCursor:
+      return moveCursorAbsolute(options.x, options.y, escape);
+    case MovementType.RelativeCursor:
+      return moveCursorRelative(options.x, options.y, escape);
   }
 };
 
-const moveCursorRelative = ({ x, y }: { x: number, y: number }) => {
+const moveCursorRelative = (x: number, y: number, escape: string) => {
+  if (x === 0 && y === 0){ return ""; }
+
   let result = "";
 
   if (y < 0) {
     result += String.raw`${escape}${-y}A`;
-  }
-
-  if (y > 0) {
+  } else if (y > 0) {
     result += String.raw`${escape}${y}B`;
   }
 
-  if (x < 0) {
-    result += String.raw`${escape}${-x}C`;
-  }
-
   if (x > 0) {
-    result += String.raw`${escape}${x}D`;
+    result += String.raw`${escape}${x}C`;
+  } else if (x > 0) {
+    result += String.raw`${escape}${-x}D`;
   }
 
   return result;
 }
 
-const moveLinesRelative = (y: number, escape: EscapeType) => {
+
+const moveLinesRelative = (y: number, escape: string) => {
+  if (y === 0) { return ""; }
+
   if (y < 0) {
     return String.raw`${escape}${-y}E`;
   } else if (y > 0) {
@@ -44,7 +49,10 @@ const moveLinesRelative = (y: number, escape: EscapeType) => {
   }
 }
 
-const moveCursorAbsolute = (row = null, column = null, escape) => {
+
+const moveCursorAbsolute = (row = null, column = null, escape: string) => {
+  if(row === 0 && column === null) { return ""; }
+
   if (row === null) {
     return String.raw`${escape}${column}G`;
   } else {
@@ -52,12 +60,15 @@ const moveCursorAbsolute = (row = null, column = null, escape) => {
   }
 }
 
+
 const clearScreen = (mode) => {
   return String.raw`${escape}${mode}J`;
 }
 
+
 const clearLine = (mode) => {
   return String.raw`${escape}${mode}K`;
 }
+
 
 export default transformMovement;
