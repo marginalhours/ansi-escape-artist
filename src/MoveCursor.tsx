@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Direction, MovementType } from './constants';
-import Label from './Label';
+import {  MovementType } from './constants';
 import Radiobutton from './Radiobutton';
 
 const repeatTillMouseUp = (onCallback, onEnd) => {
@@ -35,7 +34,7 @@ function MoveCursor ({ onChange, isActive, movementType }) {
 
   useEffect(() => {
     onChange({x: cursorX, y: cursorY, movementType: movementType});
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, movementType]);
 
   const handleMove = (dx: number, dy: number) => {
     repeatTillMouseUp((dt) => {
@@ -45,8 +44,8 @@ function MoveCursor ({ onChange, isActive, movementType }) {
         total *= 0.67;
         total = Math.max(total, 100);
 
-        setCursorX(cursorX => cursorX + dx);
-        setCursorY(cursorY => cursorY + dy);
+        setCursorX(cursorX => movementType === MovementType.AbsoluteCursor ? Math.max(cursorX + dx, 0) : cursorX + dx);
+        setCursorY(cursorY => movementType === MovementType.AbsoluteCursor ? Math.max(cursorY + dy, 0) : cursorY + dy);
       }
     }, () => {});
   }
@@ -71,7 +70,7 @@ function MoveCursor ({ onChange, isActive, movementType }) {
         <div className="w-1/2 justify-center items-center flex">
           <div className="block-outer w-28 flex flex-col">
             <div className="relative border rounded-t h-28 w-28 flex justify-center items-center">
-              <output className="displacement">({cursorX}, {cursorY})</output>
+              <output className="displacement select-none">({cursorX}, {cursorY})</output>
               <div onMouseDown={() => handleMove(0, -1)} className="direction-arrow top">▲</div>
               <div onMouseDown={() => handleMove(1, -1)} className="direction-arrow top-right">▲</div>
               <div onMouseDown={() => handleMove(1, 0)} className="direction-arrow right">▲</div>
@@ -81,7 +80,7 @@ function MoveCursor ({ onChange, isActive, movementType }) {
               <div onMouseDown={() => handleMove(-1, 0)} className="direction-arrow left">▲</div>
               <div onMouseDown={() => handleMove(-1, -1)} className="direction-arrow top-left">▲</div>
             </div>
-            <button className="border bg-gray-200 p-2 w-100 rounded-b" onClick={handleReset}>Reset</button>
+            <button className="border select-none outline-none focus:outline-none p-2 w-100 rounded-b bg-gray-200 hover:bg-gray-300 active:bg-gray-400" onClick={handleReset}>Reset</button>
           </div>
         </div>
         <div className="w-1/2 flex justify-center items-center" onChange={handleMovementTypeChange}>

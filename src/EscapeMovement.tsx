@@ -4,14 +4,16 @@ import Box from './Box';
 import Label from './Label';
 import ChangeLine from './ChangeLine';
 import OutputEscapeSequence from './OutputEscapeSequence';
-import { Direction, EscapeType, Language, MovementType } from './constants';
+import { EscapeType, Language, MovementType, ClearType } from './constants';
 import { transformMovement } from './transforms';
 import MoveCursor from './MoveCursor';
+import ClearArea from './ClearArea';
 
 const EscapeMovement = () => {
   const [language, setLanguage] = useState(Language.Python3);
   const [escapeType, setEscapeType] = useState(EscapeType.Octal)
   const [movementType, setMovementType] = useState(MovementType.None);
+  const [clearType, setClearType] = useState(ClearType.None);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
 
@@ -26,12 +28,18 @@ const EscapeMovement = () => {
     setMovementType(MovementType.LinesRelative);
   }
 
+  const handleClear = (clearType: ClearType, movementType: MovementType) => {
+    setClearType(clearType);
+    setMovementType(movementType);
+  }
+
   const transformOptions = {
     movementType: movementType,
     x: x, 
     y: y,
+    clearType: clearType,
     language: language,
-    escapeType: escapeType
+    escapeType: escapeType,
   };
 
   return (
@@ -52,7 +60,11 @@ const EscapeMovement = () => {
           />
         </Box>
         <Box>
-          <Label text="Clear" />
+          <ClearArea
+            isActive={movementType === MovementType.ScreenClear || movementType === MovementType.LineClear}
+            movementType={movementType}
+            onChange={handleClear}
+          />
         </Box>
         <Box>
           <Label text="Scroll" />

@@ -182,8 +182,8 @@ const EscapeColour = () => {
       <div className="flex flex-col w-1/2 p-2">
         <Box>
           <Label text="text" />
-          <input className="border focus:border-0 rounded px-4 py-2 w-full" type='text' placeholder='Enter your text...' onChange={onUserTextChange} value={userText}></input>
-          <select className="w-full border mt-2 focus:border-0 rounded px-4 py-2 w-full bg-white text-gray-400" onChange={handlePresetSelect}>
+          <input className="border focus:border-none focus:outline-none rounded px-4 py-2 w-full" type='text' placeholder='Enter your text...' onChange={onUserTextChange} value={userText}></input>
+          <select className="w-full border mt-2 focus:border-none focus:outline-none rounded px-4 py-2 w-full bg-white text-gray-400" onChange={handlePresetSelect}>
             <option value='-1'>Select a preset...</option>
             <option value='▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▀ ▔'>Box-drawing: Rising blocks</option>
             <option value='█ ▉ ▊ ▋ ▌ ▍ ▎ ▏▐	▕	'>Box-drawing: Thinning blocks</option>

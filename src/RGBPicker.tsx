@@ -49,7 +49,7 @@ function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: Ch
   const handleRChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     try {
-      const newR = parseInt(event.target.value);
+      const newR = parseInt(event.target.value) || 0;
       setR(newR);
       recalculateColour(newR, g, b);
     } catch {}
@@ -58,7 +58,7 @@ function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: Ch
   const handleGChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     try {
-      const newG = parseInt(event.target.value);
+      const newG = parseInt(event.target.value) || 0;
       setG(newG);
       recalculateColour(r, newG, b);
     } catch {}
@@ -68,7 +68,7 @@ function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: Ch
   const handleBChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     try {
-      const newB = parseInt(event.target.value);
+      const newB = parseInt(event.target.value) || 0;
       setB(newB);
       recalculateColour(r, g, newB);
     } catch {}

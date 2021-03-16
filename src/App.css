@@ -146,3 +146,7 @@ input[type=radio].hide-radio:checked + span.radio-target::after{
 .direction-arrow.bottom-right {
     transform: translate(2rem, 2rem) rotateZ(135deg);
 }
+
+input:focus, select:focus {
+    outline: none!important;
+}

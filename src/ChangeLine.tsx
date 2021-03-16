@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Direction, MovementType } from './constants';
 import Label from './Label';
 import Radiobutton from './Radiobutton';
 
 function ChangeLine({ onChange, isActive }) {
 
   const [lineRelativeCount, setLineRelativeCount] = useState(0);
-  const [direction, setDirection] = useState<Direction|null>(null);
+  const [direction, setDirection] = useState(0);
 
   const handleLineRelativeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseInt(event.target.value);
@@ -19,14 +18,7 @@ function ChangeLine({ onChange, isActive }) {
   }
 
   useEffect(() => {
-    switch(direction){
-      case Direction.Up:
-        onChange(-lineRelativeCount);
-        break;
-      case Direction.Down:
-        onChange(lineRelativeCount);
-        break;
-    }
+      onChange(direction * lineRelativeCount); 
   }, [lineRelativeCount, direction]);
 
   return (
@@ -37,8 +29,8 @@ function ChangeLine({ onChange, isActive }) {
         <input className="inline-block w-12 text-center border-b" type="number" min="0" value={lineRelativeCount} onChange={handleLineRelativeChange} />
         <span className="ml-2 mr-6 inline-block ">lines</span>
         <div className="inline-block" onChange={handleDirectionChange}>
-          <Radiobutton label="above" name="lineDirection" value={Direction.Up} checked={direction === "up"} />
-          <Radiobutton label="below" name="lineDirection" value={Direction.Down} checked={direction === "down"} />
+          <Radiobutton label="above" name="lineDirection" value={-1} checked={direction === -1} />
+          <Radiobutton label="below" name="lineDirection" value={1} checked={direction === 1} />
         </div>
       </div>
     </>

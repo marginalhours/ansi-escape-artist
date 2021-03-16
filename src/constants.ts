@@ -23,14 +23,15 @@ export enum MovementType {
     RelativeCursor = 1,
     AbsoluteCursor = 2,
     LinesRelative = 3,
-    Clear = 4
+    LineClear = 4,
+    ScreenClear = 5
 };
 
-export enum Direction {
-    Up = 0,
-    Down = 1,
-    Left = 2,
-    Right = 3
+export enum ClearType {
+    None = -1,
+    FromCursorTillEnd = 0,
+    FromCursorTillStart = 1,
+    Entire = 2
 };
 
 class EscapeSet {
