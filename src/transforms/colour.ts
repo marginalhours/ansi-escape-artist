@@ -2,15 +2,18 @@ import { EscapeType, Language, Escapes, CODE_TEMPLATES } from '../constants';
 import AnsiColor from '../ansiColour';
 
 
-interface ColourOptions { 
+export interface ColourOptions { 
     text: string, 
     foreground: AnsiColor, 
     background: AnsiColor, 
+    escapeType: EscapeType,
     bold: boolean, 
-    underline: boolean,
+    dimmed: boolean,
     italic: boolean,
+    underline: boolean,
+    overline: boolean,
     strikethrough: boolean,
-    escapeType: EscapeType
+    blink: boolean
 };
 
 interface RawColourOptions extends ColourOptions {
@@ -18,7 +21,7 @@ interface RawColourOptions extends ColourOptions {
 }
 
 const getRawEscapeCodeBytes = (options: RawColourOptions): Array<Number> => {
-    const { text, foreground, background, bold, italic, underline, strikethrough} = options; 
+    const { text, foreground, background, bold, dimmed, italic, underline, overline, strikethrough, blink} = options; 
 
     if (text === "") { return []; }
 
@@ -27,14 +30,23 @@ const getRawEscapeCodeBytes = (options: RawColourOptions): Array<Number> => {
     if (bold) {  
         code.push(1);
     }
+    if (dimmed) {
+        code.push(2);
+    }
     if (italic) {
         code.push(3);
     }
     if (underline) {
         code.push(4);
     }
+    if (blink) {
+        code.push(5);
+    }
     if (strikethrough) {
         code.push(9);
+    }
+    if (overline) {
+        code.push(53);
     }
 
     if (foreground) {
@@ -91,4 +103,17 @@ export const transformTextAddRawColourSequence = (options: RawColourOptions): st
 
     return String.raw`${prefix}${text}${suffix}`;
 };
+
+export const getPrismLanguage = (language: Language) => {
+    switch(language){
+        case Language.Python3:
+            return "language-python";
+        case Language.Rust:
+            return "language-rust";
+        case Language.JavaScript:
+            return "language-javascript";
+        default:
+            return "language-clike";
+    }
+}
 

@@ -11,6 +11,20 @@ export class AnsiColour {
     }
 };
 
+/*
+*  Dim a colour string, either rgb or hex. Dimming is implemented as multiplication by (1 - f)
+*  so 0.2 dims by 20%  
+*/
+export function dim(colour: string, f: number) {
+    let r, g, b;
+    if (colour[0] === "#") {
+        [r, g, b] = [1, 3, 5].map(ix => colour.slice(ix, ix + 2)).map(x => parseInt(x, 16));
+    } else {
+        [r, g, b] = colour.match(/\d+/g)?.map(x => parseInt(x));
+    }
+    return `rgb(${Math.floor(r * (1 - f))}, ${Math.floor(g * (1 - f))}, ${Math.floor(b * (1 - f))})`;
+}
+
 // Cf. https://en.wikipedia.org/wiki/ANSI_escape_code
 
 // 4-bit foreground colours

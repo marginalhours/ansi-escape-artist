@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {EscapeType } from './constants';
+import {EscapeType, Escapes } from './constants';
 
 import Label from './Label';
 import EscapeTypeSelector from './EscapeTypeSelector';
@@ -27,9 +27,14 @@ const copyFromInput = (selector: string) => {
 
 
 function OutputEscapeSequence({ transformOptions, transform, escapeType, setEscapeType }) {
+    const { language} = transformOptions; 
+    const hasHex = Escapes[language][EscapeType.Hex] !== undefined;
+    const hasOct = Escapes[language][EscapeType.Octal] !== undefined; 
+    const hasUni = Escapes[language][EscapeType.Unicode] !== undefined; 
+
     return (
         <>
-        <Label text="Output Escape Sequence" />
+        <Label text="Escape Sequence" />
           <div className="relative mb-2">
             <input
               className="raw-output w-full h-12 font-mono border rounded px-4 py-2 w-full"
@@ -43,9 +48,9 @@ function OutputEscapeSequence({ transformOptions, transform, escapeType, setEsca
               </div>
             </div>
             <div className="absolute top-0 right-0 h-11 flex flex-row items-center justify-between w-min px-4 pt-.5 bg-white mt-0.5 mr-0.5 border-l">
-              <EscapeTypeSelector name="oct" selected={escapeType == EscapeType.Octal} onClick={() => setEscapeType(EscapeType.Octal)} />
-              <EscapeTypeSelector name="hex" selected={escapeType == EscapeType.Hex} onClick={() => setEscapeType(EscapeType.Hex)} />
-              <EscapeTypeSelector name="uni" selected={escapeType == EscapeType.Unicode} onClick={() => setEscapeType(EscapeType.Unicode)} />
+              {hasHex && <EscapeTypeSelector name="hex" selected={escapeType == EscapeType.Hex} onClick={() => setEscapeType(EscapeType.Hex)} />}
+              {hasOct && <EscapeTypeSelector name="oct" selected={escapeType == EscapeType.Octal} onClick={() => setEscapeType(EscapeType.Octal)} />}
+              {hasUni && <EscapeTypeSelector name="uni" selected={escapeType == EscapeType.Unicode} onClick={() => setEscapeType(EscapeType.Unicode)} />}
             </div>
           </div>
         </>

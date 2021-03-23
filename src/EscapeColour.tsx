@@ -1,30 +1,20 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 
 import { Language, ColourType, EscapeType } from './constants';
-import { transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
+import { getPrismLanguage, transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
 
-import { AnsiColour } from './ansiColour';
+import { AnsiColour, dim } from './ansiColour';
 
 import Label from './Label';
 import ColourPickerGroup from './ColourPickerGroup';
 import Box from './Box';
 import Checkbox from './Checkbox';
 
-import AnsiColor from './ansiColour';
+import { ColourOptions } from './transforms/colour';
 import OutputEscapeSequence from './OutputEscapeSequence';
 
-interface ColourOptions {
-  text: string,
-  foreground: AnsiColor,
-  background: AnsiColor,
-  bold: boolean,
-  italic: boolean,
-  underline: boolean,
-  strikethrough: boolean
-};
-
 const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element => {
-  const { text, foreground, background, bold, italic, underline, strikethrough } = options;
+  const { text, foreground, background, bold, dimmed, italic, underline, strikethrough, overline, blink } = options;
 
   let result = (<span>{text}</span>);
 
@@ -34,10 +24,22 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
 
   if (bold) { styles["fontWeight"] = "bold"; }
   if (italic) { styles["fontStyle"] = "italic"; }
-  if (underline) { styles["textDecoration"] = "underline"; }
+  styles["textDecoration"] = "";
 
-  if (foreground) { styles["color"] = foreground.rgb; }
+  if (underline) { styles["textDecoration"] += " underline"; }
+  if (overline) { styles["textDecoration"] += " overline"; }
+
+  // Dimming dims foreground colour, but does nothing to background
+  if (foreground) { styles["color"] = dim(foreground.rgb, dimmed ? 0.2: 0.0); }
+  if (!foreground && dimmed) { styles["color"] = dim("#ffffff", 0.2); }
+
+  
   if (background) { styles["backgroundColor"] = background.rgb; }
+
+  // Handle blink before applying styles, since only text should blink (not background)
+  if (blink) {
+    result = <span className="blink">{result}</span>;
+  }
 
   result = <span style={styles}>{result}</span>;
 
@@ -54,15 +56,18 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
 const EscapeColour = () => {
   // Language to generate escape sequences for
   const [language, setLanguage] = useState(Language.Python3);
-  const [escapeType, setEscapeType] = useState(EscapeType.Octal);
+  const [escapeType, setEscapeType] = useState(EscapeType.Hex);
   // Active FG/BG pickers
   const [foregroundColourType, setForegroundColourType] = useState(ColourType.None);
   const [backgroundColourType, setBackgroundColourType] = useState(ColourType.None);
   // Text formatting
   const [bold, setBold] = useState(false);
+  const [dimmed, setDimmed] = useState(false);
   const [underline, setUnderline] = useState(false);
   const [italic, setItalic] = useState(false);
   const [strikethrough, setStrikethrough] = useState(false);
+  const [overline, setOverline] = useState(false);
+  const [blink, setBlink] = useState(false);
   // Text colours
   const [foreground, setForeground] = useState<AnsiColour | null>(null);
   const [background, setBackground] = useState<AnsiColour | null>(null);
@@ -78,22 +83,6 @@ const EscapeColour = () => {
     const element = event.target as HTMLInputElement;
     setUserText(element.value);
   };
-
-  const toggleBold = () => {
-    setBold(!bold);
-  }
-
-  const toggleItalic = () => {
-    setItalic(!italic);
-  }
-
-  const toggleUnderline = () => {
-    setUnderline(!underline);
-  }
-
-  const toggleStrikethrough = () => {
-    setStrikethrough(!strikethrough);
-  }
 
   const handleForegroundChange = (newColour: AnsiColour, colourType: ColourType) => {
     setForeground(newColour);
@@ -175,24 +164,32 @@ const EscapeColour = () => {
   }
 
 
-  const transformOptions = { text: userText, foreground: foreground, background: background, bold: bold, italic: italic, underline: underline, strikethrough: strikethrough, language: language, escapeType: escapeType };
+  const transformOptions = { text: userText, foreground: foreground, background: background, bold: bold, dimmed: dimmed, italic: italic, underline: underline, overline: overline, strikethrough: strikethrough, blink: blink, language: language, escapeType: escapeType };
 
   return (
     <main className="flex flex-row w-full">
       <div className="flex flex-col w-1/2 p-2">
         <Box>
           <Label text="text" />
-          <input className="border focus:border-none focus:outline-none rounded px-4 py-2 w-full" type='text' placeholder='Enter your text...' onChange={onUserTextChange} value={userText}></input>
-          <select className="w-full border mt-2 focus:border-none focus:outline-none rounded px-4 py-2 w-full bg-white text-gray-400" onChange={handlePresetSelect}>
-            <option value='-1'>Select a preset...</option>
-            <option value='▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▀ ▔'>Box-drawing: Rising blocks</option>
-            <option value='█ ▉ ▊ ▋ ▌ ▍ ▎ ▏▐	▕	'>Box-drawing: Thinning blocks</option>
-            <option value='█ ▓ ▒ ░'>Box-drawing: Fading blocks</option>
-            <option value='▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟'>Box-drawing: Quadrants</option>
-            <option value='┌─┐│└─┘├┬┤┴┼╭─╮╰╴╶╯╵╷'>Box-drawing: Light pipes</option>
-            <option value='┏━┓┃┗━┛┣┳┫┻╋╸╺╹╻'>Box-drawing: Heavy pipes</option>
-            <option value='╔═╗║╚═╝╠╦╣╧╬'>Box-drawing: Doubled pipes</option>
-          </select>
+          <div className="relative mb-2">
+            <input className="border focus:border-none focus:outline-none rounded px-4 py-2 w-full" type='text' placeholder='Enter your text...' onChange={onUserTextChange} value={userText}></input>
+            <select className="absolute top-1 p-0 right-2 w-min h-9 border-l active:border-none focus:border-none focus:outline-none px-4 py-2 bg-white text-gray-500" onChange={handlePresetSelect}>
+              <option value='-1'>Select preset...</option>
+              <option value='⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ'>Superscripts</option>
+              <option value='₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ'>Subscripts</option>
+              <option value='♔♕♖♗♘♙♚♛♜♝♞♟'>Chess Pieces</option>
+              <option value='♠♡♢♣♤♥♦♧'>Playing Cards</option>
+              <option value='⚀⚁⚂⚃⚄⚅'>Dice</option>
+              <option value='⚐⚑⚒⚓⚔⚕⚖⚗⚘⚙⚚⚛⚜⚝'>Miscellaneous Symbols</option>
+              <option value='▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▀ ▔'>Box-drawing: Rising blocks</option>
+              <option value='█ ▉ ▊ ▋ ▌ ▍ ▎ ▏▐	▕	'>Box-drawing: Thinning blocks</option>
+              <option value='█ ▓ ▒ ░'>Box-drawing: Fading blocks</option>
+              <option value='▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟'>Box-drawing: Quadrants</option>
+              <option value='┌─┐│└─┘├┬┤┴┼╭─╮╰╴╶╯╵╷'>Box-drawing: Light pipes</option>
+              <option value='┏━┓┃┗━┛┣┳┫┻╋╸╺╹╻'>Box-drawing: Heavy pipes</option>
+              <option value='╔═╗║╚═╝╠╦╣╧╬'>Box-drawing: Doubled pipes</option>
+            </select>
+          </div>
         </Box>
         <Box>
           <Label text="Colours" />
@@ -216,17 +213,20 @@ const EscapeColour = () => {
           </div>
         </Box>
         <Box>
-          <Label text="Attributes" />
-          <div className="flex flex-row items-center justify-center">
-            <Checkbox label="Bold" checked={bold} onChange={toggleBold} />
-            <Checkbox label="Italic" checked={italic} onChange={toggleItalic} />
-            <Checkbox label="Underline" checked={underline} onChange={toggleUnderline} />
-            <Checkbox label="Strikethrough" checked={strikethrough} onChange={toggleStrikethrough} />
+          <Label text="Text Attributes" />
+          <div className="flex flex-row items-center justify-between px-4">
+            <Checkbox label="Bold" checked={bold} onChange={() => setBold(!bold)} />
+            <Checkbox label="Dimmed" checked={dimmed} onChange={() => setDimmed(!dimmed)} />
+            <Checkbox label="Italic" checked={italic} onChange={() => setItalic(!italic)} />
+            <Checkbox label="Underline" checked={underline} onChange={() => setUnderline(!underline)} />
+            <Checkbox label="Overline" checked={overline} onChange={() => setOverline(!overline)} />
+            <Checkbox label="Strikethrough" checked={strikethrough} onChange={() => setStrikethrough(!strikethrough)} />
+            <Checkbox label="Blink" checked={blink} onChange={() => setBlink(!blink)} />
           </div>
         </Box>
         <Box>
           <Label text="Language" />
-          <select className="w-full border focus:border-0 rounded px-4 py-2 w-full bg-white text-gray-400" onChange={handleLanguageChange}>
+          <select className="w-full border focus:border-0 rounded px-4 py-2 w-full bg-white" onChange={handleLanguageChange}>
             {Object.keys(Language).filter(key => !isNaN(Number(Language[key]))).map(key => {
               return (<option key={key} value={Language[key]}>{key}</option>)
             })}
@@ -245,7 +245,7 @@ const EscapeColour = () => {
           <Label text="Example Code" />
           <div className="relative mb-2 rounded">
             <pre className="rounded code-sample">
-              <code className="mono whitespace-pre text-white rounded raw-code-sample language-python">
+              <code className={"mono whitespace-pre text-white rounded raw-code-sample " + getPrismLanguage(language)}>
                 {transformTextToCodeSample(transformOptions)}
               </code>
             </pre>

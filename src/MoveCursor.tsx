@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {  MovementType } from './constants';
+import Label from './Label';
 import Radiobutton from './Radiobutton';
 
 const repeatTillMouseUp = (onCallback, onEnd) => {
@@ -25,15 +26,35 @@ const repeatTillMouseUp = (onCallback, onEnd) => {
   });
 }
 
-function MoveCursor ({ onChange, isActive, movementType }) {
+const arrowClasses = (direction: str, x: number, y: number, movementType: MovementType) => {
+  if (movementType === MovementType.AbsoluteCursor){
+    switch(direction) {
+      case 'top':
+        return (y > 0) ? `direction-arrow top` : `direction-arrow top disabled`;
+      case 'top-right':
+        return (y > 0) ? `direction-arrow top-right` : `direction-arrow top-right disabled`;
+      case 'top-left':
+        return (y > 0 && x > 0) ? `direction-arrow top-left` : 'direction-arrow top-left disabled';
+      case 'left':
+        return (x > 0) ? `direction-arrow left`: `direction-arrow left disabled`;
+      default:
+        return `direction-arrow ${direction}`;
+    }
+  } else {
+    return `direction-arrow ${direction}`;
+  }
+}
+
+function MoveCursor ({ onChange, movementType }) {
   const [cursorX, setCursorX] = useState(0);
   const [cursorY, setCursorY] = useState(0);
 
   let remaining = 0;
   let total = 600;
+  let originalTotal = 600;
 
   useEffect(() => {
-    onChange({x: cursorX, y: cursorY, movementType: movementType});
+      onChange({x: cursorX, y: cursorY, movementType: movementType});
   }, [cursorX, cursorY, movementType]);
 
   const handleMove = (dx: number, dy: number) => {
@@ -47,7 +68,10 @@ function MoveCursor ({ onChange, isActive, movementType }) {
         setCursorX(cursorX => movementType === MovementType.AbsoluteCursor ? Math.max(cursorX + dx, 0) : cursorX + dx);
         setCursorY(cursorY => movementType === MovementType.AbsoluteCursor ? Math.max(cursorY + dy, 0) : cursorY + dy);
       }
-    }, () => {});
+    }, () => {
+      total = originalTotal;
+      remaining = 0;
+    });
   }
 
   const handleReset = () => {
@@ -66,28 +90,31 @@ function MoveCursor ({ onChange, isActive, movementType }) {
   }
 
   return (
-      <div className="flex flex-row">
-        <div className="w-1/2 justify-center items-center flex">
-          <div className="block-outer w-28 flex flex-col">
-            <div className="relative border rounded-t h-28 w-28 flex justify-center items-center">
-              <output className="displacement select-none">({cursorX}, {cursorY})</output>
-              <div onMouseDown={() => handleMove(0, -1)} className="direction-arrow top">▲</div>
-              <div onMouseDown={() => handleMove(1, -1)} className="direction-arrow top-right">▲</div>
-              <div onMouseDown={() => handleMove(1, 0)} className="direction-arrow right">▲</div>
-              <div onMouseDown={() => handleMove(1, 1)} className="direction-arrow bottom-right">▲</div>
-              <div onMouseDown={() => handleMove(0, 1)} className="direction-arrow bottom">▲</div>
-              <div onMouseDown={() => handleMove(-1, 1)} className="direction-arrow bottom-left">▲</div>
-              <div onMouseDown={() => handleMove(-1, 0)} className="direction-arrow left">▲</div>
-              <div onMouseDown={() => handleMove(-1, -1)} className="direction-arrow top-left">▲</div>
+      <>
+        <Label text="Move Cursor" />
+        <div className="flex flex-row">
+          <div className="w-1/2 justify-center items-center flex">
+            <div className="block-outer w-28 flex flex-col">
+              <div className="relative border rounded-t h-28 w-28 flex justify-center items-center">
+                <output className="displacement select-none">({cursorX}, {cursorY})</output>
+                <div onMouseDown={() => handleMove(0, -1)} className={arrowClasses("top", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(1, -1)} className={arrowClasses("top-right", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(1, 0)} className={arrowClasses("right", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(1, 1)} className={arrowClasses("bottom-right", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(0, 1)} className={arrowClasses("bottom", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(-1, 1)} className={arrowClasses("bottom-left", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(-1, 0)} className={arrowClasses("left", cursorX, cursorY, movementType)}>▲</div>
+                <div onMouseDown={() => handleMove(-1, -1)} className={arrowClasses("top-left", cursorX, cursorY, movementType)}>▲</div>
+              </div>
+              <button className="border select-none outline-none focus:outline-none p-2 w-100 rounded-b bg-gray-200 hover:bg-gray-300 active:bg-gray-400" onClick={handleReset}>Reset</button>
             </div>
-            <button className="border select-none outline-none focus:outline-none p-2 w-100 rounded-b bg-gray-200 hover:bg-gray-300 active:bg-gray-400" onClick={handleReset}>Reset</button>
+          </div>
+          <div className="w-1/2 flex justify-center items-center" onChange={handleMovementTypeChange}>
+            <Radiobutton label="relative" name="cursorMovement" value={MovementType.RelativeCursor} checked={movementType === MovementType.RelativeCursor} />
+            <Radiobutton label="absolute" name="cursorMovement" value={MovementType.AbsoluteCursor} checked={movementType === MovementType.AbsoluteCursor} />
           </div>
         </div>
-        <div className="w-1/2 flex justify-center items-center" onChange={handleMovementTypeChange}>
-          <Radiobutton label="relative" name="cursorMovement" value={MovementType.RelativeCursor} checked={movementType === MovementType.RelativeCursor} />
-          <Radiobutton label="absolute" name="cursorMovement" value={MovementType.AbsoluteCursor} checked={movementType === MovementType.AbsoluteCursor} />
-        </div>
-      </div>
+      </>
   )
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import ActiveBox from './ActiveBox';
 import Box from './Box';
 import Label from './Label';
 import ChangeLine from './ChangeLine';
@@ -8,10 +9,12 @@ import { EscapeType, Language, MovementType, ClearType } from './constants';
 import { transformMovement } from './transforms';
 import MoveCursor from './MoveCursor';
 import ClearArea from './ClearArea';
+import ScrollScreen from './ScrollScreen';
+import Radiobutton from './Radiobutton';
 
 const EscapeMovement = () => {
   const [language, setLanguage] = useState(Language.Python3);
-  const [escapeType, setEscapeType] = useState(EscapeType.Octal)
+  const [escapeType, setEscapeType] = useState(EscapeType.Hex)
   const [movementType, setMovementType] = useState(MovementType.None);
   const [clearType, setClearType] = useState(ClearType.None);
   const [x, setX] = useState(0);
@@ -20,7 +23,9 @@ const EscapeMovement = () => {
   const handleCursorChange = ({x, y, movementType}: {x: number, y: number, movementType: MovementType}) => {
     setX(x);
     setY(y);
-    setMovementType(movementType);
+    if (movementType !== MovementType.None){
+      setMovementType(movementType);
+    }
   }
 
   const handleRelativeLineChange = (y: number) => {
@@ -31,6 +36,16 @@ const EscapeMovement = () => {
   const handleClear = (clearType: ClearType, movementType: MovementType) => {
     setClearType(clearType);
     setMovementType(movementType);
+  }
+
+  const handleScroll = (y: number) => {
+    setY(y);
+    setMovementType(MovementType.Scroll);
+  }
+
+  const handleMiscellaneous = (event : React.ChangeEvent<HTMLInputElement>) => {
+    const command = parseInt(event.target.value) as MovementType;
+    setMovementType(command);
   }
 
   const transformOptions = {
@@ -44,31 +59,52 @@ const EscapeMovement = () => {
 
   return (
     <main className="flex flex-row">
-      <div className="w-1/2 p-2">
-        <Box>
-          <Label text="Move Cursor" />
-          <MoveCursor 
-            isActive={movementType === MovementType.AbsoluteCursor || movementType == MovementType.RelativeCursor}
+      <div className="w-1/2 p-4">
+        <ActiveBox 
+          isActive={movementType === MovementType.AbsoluteCursor || movementType == MovementType.RelativeCursor}
+          setActive={() => { setMovementType(MovementType.RelativeCursor); }}
+        >
+          <MoveCursor
             movementType={movementType}
             onChange={handleCursorChange}
           />
-        </Box>
-        <Box>
-          <ChangeLine 
-            isActive={movementType === MovementType.LinesRelative}
+        </ActiveBox>
+        <ActiveBox 
+          isActive={movementType === MovementType.LinesRelative}
+          setActive={() => { setMovementType(MovementType.LinesRelative); }}
+        >
+          <ChangeLine
             onChange={handleRelativeLineChange}
           />
-        </Box>
-        <Box>
+        </ActiveBox>
+        <ActiveBox 
+          isActive={movementType === MovementType.Scroll}
+          setActive={() => { setMovementType(MovementType.Scroll); }}
+        >
+          <ScrollScreen
+            onChange={handleScroll}
+          /> 
+        </ActiveBox>
+        <ActiveBox 
+          isActive={movementType === MovementType.ScreenClear || movementType === MovementType.LineClear}
+          setActive={() => { setMovementType(MovementType.ScreenClear); }}
+        >
           <ClearArea
-            isActive={movementType === MovementType.ScreenClear || movementType === MovementType.LineClear}
             movementType={movementType}
             onChange={handleClear}
           />
-        </Box>
-        <Box>
-          <Label text="Scroll" />
-        </Box>
+        </ActiveBox>
+        <ActiveBox 
+          isActive={movementType === MovementType.SaveCursor || movementType === MovementType.RestoreCursor || movementType === MovementType.ReportCursor}
+          setActive={() => { setMovementType(MovementType.SaveCursor); }}
+        >
+          <Label text="Miscellaneous"/>
+          <div className="inline-block flex justify-between" onChange={handleMiscellaneous}>
+            <Radiobutton label="Save cursor position" name="miscellaneous" value={MovementType.SaveCursor} checked={movementType === MovementType.SaveCursor} />
+            <Radiobutton label="Restore cursor position" name="miscellaneous" value={MovementType.RestoreCursor} checked={movementType === MovementType.RestoreCursor} />
+            <Radiobutton label="Report cursor position" name="miscellaneous" value={MovementType.ReportCursor} checked={movementType === MovementType.ReportCursor} />
+          </div>
+        </ActiveBox>
       </div>
       <div className="w-1/2 p-2">
         <Box>

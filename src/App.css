@@ -15,6 +15,17 @@ body {
     box-shadow: 25px 0 0 #f4c025, 50px 0 0 #3ec930;
 }
 
+.preview-output::after {
+    content: 'ymmv-term';
+    position: absolute;
+    color: #777;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    user-select: none;
+}
+
 input:focus {
     outline: none;
     border-color: rgba(49, 46, 129);
@@ -25,6 +36,10 @@ select:focus {
     outline: none;
     border-color: rgba(49, 46, 129);
     box-shadow: inset 0 1px 2px rgba(0,0,0,.075),0 0 5px rgba(69,122,187,.5)
+}
+
+select:active {
+    border: none;
 }
 
 /* Custom checkbox */
@@ -94,6 +109,22 @@ input[type=radio].hide-radio:checked + span.radio-target::after{
     border-radius: 0.5rem !important;
 }
 
+/* */
+
+.blink {
+    animation-name: blinkFrames;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;    
+}
+
+@keyframes blinkFrames {
+    0% { opacity: 100%; }
+    50% {opacity: 0%; }
+    100% { opacity: 100%; }
+}
+
+/* Ugly styles for scrolling the cursor */
+
 .direction-arrow {
     color: #aaa;
     user-select: none;
@@ -109,6 +140,12 @@ input[type=radio].hide-radio:checked + span.radio-target::after{
     top: calc(50% - 12px);
     left: calc(50% - 12px);
     transform-origin: 50%;
+    cursor: pointer;
+}
+
+.direction-arrow.disabled {
+    color: #eee;
+    cursor: default;
 }
 
 .direction-arrow:hover {

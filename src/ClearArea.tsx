@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { ClearType, MovementType, ClearEntity } from './constants';
 import Label from './Label';
-import Radiobutton from './Radiobutton';
 
-function ClearArea ({ onChange, isActive, movementType }) {
+function ClearArea ({ onChange, movementType }) {
   const [clearType, setClearType] = useState(ClearType.None);
 
-  const handleClearTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClearTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const clearType = parseInt(event.target.value) as ClearType;
     setClearType(clearType);
     onChange(clearType, movementType);
   }
 
-  const handleChangeMovementType = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeMovementType = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const movementType = parseInt(event.target.value) as MovementType;
     onChange(clearType, movementType);
   }
@@ -20,16 +19,18 @@ function ClearArea ({ onChange, isActive, movementType }) {
   return (
     <>
       <Label text="Clear" />
-      <div className="flex flex-row h-28">
-        <div className="w-1/4 flex flex-col justify-start items-start h-full " onChange={handleChangeMovementType}>
-          <Radiobutton label="screen" name="clearEntity" value={MovementType.ScreenClear} checked={movementType === MovementType.ScreenClear} />
-          <Radiobutton label="line" name="clearEntity" value={MovementType.LineClear} checked={movementType === MovementType.LineClear} />
-        </div>
-        <div className="w-1/2 flex flex-col justify-start items-start h-full border-l" onChange={handleClearTypeChange}>
-          <Radiobutton label="from cursor to end" name="clearType" value={ClearType.FromCursorTillEnd} checked={clearType === ClearType.FromCursorTillEnd} />
-          <Radiobutton label="from cursor to start" name="clearType" value={ClearType.FromCursorTillStart} checked={clearType === ClearType.FromCursorTillStart} />
-          <Radiobutton label="entire" name="clearType" value={ClearType.Entire} checked={clearType === ClearType.Entire} />
-        </div>
+      <div className="flex flex-row h-12">
+        <select className="inline-block border mt-2 focus:border-none focus:outline-none rounded px-4 py-2 w-1/2 bg-white mr-2" onChange={handleClearTypeChange}>
+          <option value={ClearType.None}>Please select...</option>
+          <option value={ClearType.FromCursorTillEnd}>From cursor till end of</option>
+          <option value={ClearType.FromCursorTillStart}>From cursor till start of</option>
+          <option value={ClearType.Entire}>Entire</option>
+        </select>
+        <select  className="inline-block border mt-2 focus:border-none focus:outline-none rounded px-4 py-2 w-1/2 bg-white" onChange={handleChangeMovementType}>
+          <option value={MovementType.None}>please select...</option>
+          <option value={MovementType.ScreenClear}>screen</option>
+          <option value={MovementType.LineClear}>line</option>
+        </select>
       </div>
     </>
   )

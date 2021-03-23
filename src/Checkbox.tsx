@@ -2,7 +2,7 @@ import React from "react";
 
 function Checkbox({ checked, label, onChange }) {
   return (
-    <div className="ml-5">
+    <div className="">
       <label className="flex flex-row text-sm items-center justify-center cursor-pointer select-none">
         <span className="-mr-1">{label}</span>
         <input className="hide-checkbox" type='checkbox' checked={checked} onChange={onChange} />

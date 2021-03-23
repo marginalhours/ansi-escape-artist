@@ -90,7 +90,7 @@ function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: Ch
         <div className="picker absolute top-8 -left-1 h-min w-min rounded bg-white flex flex-col cursor-default" style={{ zIndex: 1000, boxShadow: "rgb(0 0 0 / 25%) 0px 1px 4px" }} >
           <Triangle top={-10} left={6} color={selectedColour?.rgb} />
           <div className="flex flex-col w-min justify-center items-center h-24 rounded">
-            <div className="h-1/2 w-full rounded-t" style={{ backgroundColor: selectedColour?.rgb }}></div>
+            <div className="h-1/2 w-full rounded-t cursor-pointer" style={{ backgroundColor: selectedColour?.rgb }} onClick={() => recalculateColour(r, g, b)}></div>
             <div className="h-1/2 flex flex-row p-2">
               <div className="w-1/3 flex flex-col justify-center items-center mx-0.5">
                 <label className="text-xs text-gray-400 inline-block text-left w-full">R</label>
