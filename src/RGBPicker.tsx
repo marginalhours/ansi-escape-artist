@@ -84,7 +84,7 @@ function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: Ch
   return (
     <div ref={ref} className="inline-block relative h-6 w-6 mt-4 border rounded cursor-pointer" onClick={showPicker}>
       <div className="w-full h-full rounded relative overflow-hidden" style={outerStyles}>
-        {!isActive && <div className="absolute bg-indigo-300" style={strikeoutStyles}></div>}
+        {!isActive && <div className="absolute bg-blue-300" style={strikeoutStyles}></div>}
       </div>
       {isComponentVisible && (
         <div className="picker absolute top-8 -left-1 h-min w-min rounded bg-white flex flex-col cursor-default" style={{ zIndex: 1000, boxShadow: "rgb(0 0 0 / 25%) 0px 1px 4px" }} >

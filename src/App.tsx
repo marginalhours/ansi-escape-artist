@@ -12,26 +12,65 @@ import './App.css'
 
 import EscapeColour from './EscapeColour';
 import EscapeMovement from './EscapeMovement';
+import { EscapeType } from './constants';
+import { LANGUAGES, LanguageType} from './languages';
+import LanguageLink from './LanguageLink';
 
 const history = createBrowserHistory();
 
 const App = () => {
+  const [languageType, setLanguageType] = useState(LanguageType.Python);
+    const [escapeType, setEscapeType] = useState(EscapeType.Hex);
+
+  const handleLanguageChange = (languageType: LanguageType) => {
+    setLanguageType(languageType);
+    // Reset escape type since not every language has every escape
+    setEscapeType(EscapeType.Hex);
+  }
+
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
+      <div className="flex flex-row w-full bg-blue-400 h-10 flex flex-row justify-start items-center p-4">
+        <h1 className="text-white">Ansi Escape Artist</h1>
+      </div>
       <Router history={history}>
-          <div className="flex flex-row w-full">
-            <div className="flex flex-row text-gray-700 bg-gray-900 flex-shrink-0 w-full">
-              <nav className="flex-grow px-4 py-4 flex flex-row">
-                <NavLink to="/colour" exact className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex-row flex" activeClassName="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium flex-row flex">Colour</NavLink>
-                <NavLink to="/movement" exact className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex-row flex" activeClassName="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium flex-row flex">Movement</NavLink>
-              </nav>
+        <div className="flex flex-row flex-1">
+          <div className="bg-gray-500 flex-shrink-0 flex flex-col w-72 p-4">
+            <div className="p-4 flex flex-col items-center">
+              <span className="block uppercase text-xs font-bold text-white mb-2">Language</span>
+              {Object.keys(LanguageType).filter(key => !isNaN(Number(LanguageType[key]))).map(key => {
+                return (<LanguageLink 
+                  key={key}
+                  languageName={LANGUAGES[LanguageType[key]].name}
+                  language={LanguageType[key]}
+                  selected={LanguageType[key] === languageType}
+                  handleClick={handleLanguageChange}
+                />);
+              })}
             </div>
           </div>
-        <Switch>
-          <Route exact path="/" render={() => <Redirect to="/colour" />} />
-          <Route default exact path="/colour" component={EscapeColour} />
-          <Route path="/movement" component={EscapeMovement} />
-        </Switch>
+        <div className="flex flex-1 flex-col">
+          <nav className="px-4 flex flex-row w-full items-start justify-start bg-white p-4 shadow-sm">
+            <NavLink to="/colour" exact 
+              className="text-gray-600 mx-4 hover:text-blue-900" 
+              activeClassName="border-b text-blue-900 border-blue-900">Colour
+            </NavLink>
+            <NavLink to="/movement" exact 
+              className="text-gray-600 mx-4 hover:text-blue-900" 
+              activeClassName="border-b text-blue-900 border-blue-900">Movement
+            </NavLink>
+          </nav>
+          <Switch>
+            <Route exact path="/" render={() => <Redirect to="/colour" />} />
+            <Route default exact path="/colour"> 
+              <EscapeColour languageType={languageType} escapeType={escapeType} setEscapeType={setEscapeType}/>
+            </Route>
+            <Route path="/movement">
+              <EscapeMovement languageType={languageType} escapeType={escapeType} setEscapeType={setEscapeType}/>  
+            </Route>
+          </Switch>
+        </div>
+      </div>
       </Router>
       <footer></footer>
     </div>

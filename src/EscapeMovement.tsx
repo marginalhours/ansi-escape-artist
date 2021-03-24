@@ -5,16 +5,15 @@ import Box from './Box';
 import Label from './Label';
 import ChangeLine from './ChangeLine';
 import OutputEscapeSequence from './OutputEscapeSequence';
-import { EscapeType, Language, MovementType, ClearType } from './constants';
+import { EscapeType, MovementType, ClearType } from './constants';
+import { LanguageType } from './languages';
 import { transformMovement } from './transforms';
 import MoveCursor from './MoveCursor';
 import ClearArea from './ClearArea';
 import ScrollScreen from './ScrollScreen';
 import Radiobutton from './Radiobutton';
 
-const EscapeMovement = () => {
-  const [language, setLanguage] = useState(Language.Python3);
-  const [escapeType, setEscapeType] = useState(EscapeType.Hex)
+const EscapeMovement = ({languageType, escapeType, setEscapeType}: {languageType: LanguageType, escapeType: EscapeType}) => {
   const [movementType, setMovementType] = useState(MovementType.None);
   const [clearType, setClearType] = useState(ClearType.None);
   const [x, setX] = useState(0);
@@ -53,13 +52,13 @@ const EscapeMovement = () => {
     x: x, 
     y: y,
     clearType: clearType,
-    language: language,
+    languageType: languageType,
     escapeType: escapeType,
   };
 
   return (
-    <main className="flex flex-row">
-      <div className="w-1/2 p-4">
+    <main className="flex flex-row w-full p-2">
+      <div className="w-1/2 p-2">
         <ActiveBox 
           isActive={movementType === MovementType.AbsoluteCursor || movementType == MovementType.RelativeCursor}
           setActive={() => { setMovementType(MovementType.RelativeCursor); }}
@@ -107,14 +106,12 @@ const EscapeMovement = () => {
         </ActiveBox>
       </div>
       <div className="w-1/2 p-2">
-        <Box>
           <OutputEscapeSequence
             transform={transformMovement}
             transformOptions={transformOptions}
             escapeType={escapeType}
             setEscapeType={setEscapeType}
           />
-        </Box>
       </div>
     </main>
   )

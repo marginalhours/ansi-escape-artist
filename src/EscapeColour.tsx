@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 
-import { Language, ColourType, EscapeType } from './constants';
+import { ColourType, EscapeType } from './constants';
+import { LanguageType, LANGUAGES } from './languages';
 import { getPrismLanguage, transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
 
 import { AnsiColour, dim } from './ansiColour';
@@ -30,10 +31,10 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
   if (overline) { styles["textDecoration"] += " overline"; }
 
   // Dimming dims foreground colour, but does nothing to background
-  if (foreground) { styles["color"] = dim(foreground.rgb, dimmed ? 0.2: 0.0); }
+  if (foreground) { styles["color"] = dim(foreground.rgb, dimmed ? 0.2 : 0.0); }
   if (!foreground && dimmed) { styles["color"] = dim("#ffffff", 0.2); }
 
-  
+
   if (background) { styles["backgroundColor"] = background.rgb; }
 
   // Handle blink before applying styles, since only text should blink (not background)
@@ -53,10 +54,8 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
   return result;
 };
 
-const EscapeColour = () => {
-  // Language to generate escape sequences for
-  const [language, setLanguage] = useState(Language.Python3);
-  const [escapeType, setEscapeType] = useState(EscapeType.Hex);
+const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageType: LanguageType, escapeType: EscapeType }) => {
+
   // Active FG/BG pickers
   const [foregroundColourType, setForegroundColourType] = useState(ColourType.None);
   const [backgroundColourType, setBackgroundColourType] = useState(ColourType.None);
@@ -108,10 +107,6 @@ const EscapeColour = () => {
     }
   }
 
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setLanguage(event.target.value);
-  }
-
   const handlePresetSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value !== "-1") {
       setUserText(event.target.value);
@@ -122,19 +117,6 @@ const EscapeColour = () => {
     const codeSample = document.querySelector('.raw-code-sample')
     Prism.highlightElement(codeSample);
   });
-
-  const getCommandForLanguage = (language: Language) => {
-    switch (+language) {
-      case Language.Python3:
-        return "$ python main.py"
-      case Language.Rust:
-        return "$ rustc main.rs && ./main"
-      case Language.Golang:
-        return "$ go run main.go"
-      case Language.JavaScript:
-        return "$ node main.js"
-    }
-  }
 
   const copyFromDiv = (selector: string) => {
     const copyText = document.querySelector(selector) as HTMLDivElement;
@@ -164,16 +146,29 @@ const EscapeColour = () => {
   }
 
 
-  const transformOptions = { text: userText, foreground: foreground, background: background, bold: bold, dimmed: dimmed, italic: italic, underline: underline, overline: overline, strikethrough: strikethrough, blink: blink, language: language, escapeType: escapeType };
+  const transformOptions = { 
+    text: userText, 
+    foreground: foreground, 
+    background: background, 
+    bold: bold, 
+    dimmed: dimmed, 
+    italic: italic, 
+    underline: underline, 
+    overline: overline, 
+    strikethrough: strikethrough, 
+    blink: blink, 
+    languageType: languageType, 
+    escapeType: escapeType 
+  };
 
   return (
-    <main className="flex flex-row w-full">
+    <main className="flex flex-row w-full p-2">
       <div className="flex flex-col w-1/2 p-2">
         <Box>
           <Label text="text" />
           <div className="relative mb-2">
-            <input className="border focus:border-none focus:outline-none rounded px-4 py-2 w-full" type='text' placeholder='Enter your text...' onChange={onUserTextChange} value={userText}></input>
-            <select className="absolute top-1 p-0 right-2 w-min h-9 border-l active:border-none focus:border-none focus:outline-none px-4 py-2 bg-white text-gray-500" onChange={handlePresetSelect}>
+            <input className="border focus:border-none focus:outline-none rounded px-4 py-2 w-full h-12" type='text' placeholder='Enter your text...' onChange={onUserTextChange} value={userText}></input>
+            <select className="absolute top-1 p-0 right-2 w-min h-10 border-l active:border-none focus:border-none focus:outline-none px-4 py-2 bg-white text-gray-500" onChange={handlePresetSelect}>
               <option value='-1'>Select preset...</option>
               <option value='⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ'>Superscripts</option>
               <option value='₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ'>Subscripts</option>
@@ -224,20 +219,18 @@ const EscapeColour = () => {
             <Checkbox label="Blink" checked={blink} onChange={() => setBlink(!blink)} />
           </div>
         </Box>
-        <Box>
-          <Label text="Language" />
-          <select className="w-full border focus:border-0 rounded px-4 py-2 w-full bg-white" onChange={handleLanguageChange}>
-            {Object.keys(Language).filter(key => !isNaN(Number(Language[key]))).map(key => {
-              return (<option key={key} value={Language[key]}>{key}</option>)
-            })}
-          </select>
-        </Box>
       </div>
       <div className="flex flex-col w-1/2 p-2">
+        <OutputEscapeSequence
+          transformOptions={transformOptions}
+          transform={transformTextAddRawColourSequence}
+          escapeType={escapeType}
+          setEscapeType={setEscapeType}
+        />
         <Box>
           <Label text="Preview" />
           <div className="preview-output relative w-full h-48 font-mono bg-gray-800 rounded p-12 text-white">
-            <output className="block">{getCommandForLanguage(language as Language)}</output>
+            <output className="block">{LANGUAGES[languageType].command}</output>
             <output className="block">{transformTextAddHTMLColourMarkup(transformOptions)}</output>
           </div>
         </Box>
@@ -245,24 +238,16 @@ const EscapeColour = () => {
           <Label text="Example Code" />
           <div className="relative mb-2 rounded">
             <pre className="rounded code-sample">
-              <code className={"mono whitespace-pre text-white rounded raw-code-sample " + getPrismLanguage(language)}>
+              <code className={"mono whitespace-pre text-white rounded raw-code-sample " + getPrismLanguage(languageType)}>
                 {transformTextToCodeSample(transformOptions)}
               </code>
             </pre>
             <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
               <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={() => copyFromDiv(".raw-code-sample")}>
-                <span className="block px-2 bg-white hover:bg-gray-100 border rounded transform active:translate-y-0.5 select-none">click to copy code</span>
+                <span className="block px-2 bg-white hover:bg-gray-100 border rounded transform active:translate-y-0.5 select-none">click to copy</span>
               </div>
             </div>
           </div>
-        </Box>
-        <Box>
-          <OutputEscapeSequence
-            transformOptions={transformOptions}
-            transform={transformTextAddRawColourSequence}
-            escapeType={escapeType}
-            setEscapeType={setEscapeType}
-          />
         </Box>
       </div>
     </main>

@@ -69,7 +69,7 @@ function FourBitPicker({ onChange, onReset, colours, isBright, isActive }: { onC
   return (
     <div ref={ref} className="inline-block relative h-6 w-6 mt-4 border rounded cursor-pointer" onClick={toggleShowPicker}>
       <div className="w-full h-full rounded relative overflow-hidden" style={outerStyles}>
-        {!isActive && <div className="absolute bg-indigo-300" style={strikeoutStyles}></div>}
+        {!isActive && <div className="absolute bg-blue-300" style={strikeoutStyles}></div>}
       </div>
       {isComponentVisible && (
         <div className="picker absolute top-8 -left-1 h-min w-min border rounded bg-white flex flex-col cursor-default" style={{ zIndex: 1000, boxShadow: "rgb(0 0 0 / 25%) 0px 1px 4px" }} >
@@ -81,7 +81,7 @@ function FourBitPicker({ onChange, onReset, colours, isBright, isActive }: { onC
               return (<div key={`colour-${idx}`} data-index={idx} className="inline-block mx-0.5 h-6 w-6 rounded cursor-pointer" style={style} onClick={handleColorSelect}></div>);
             })}
             <div onClick={handleReset} className="inline-block h-6 w-6 mx-0.5 border rounded relative overflow-hidden cursor-pointer" title="clear">
-              <div className="absolute bg-indigo-300" style={strikeoutStyles}></div>
+              <div className="absolute bg-blue-300" style={strikeoutStyles}></div>
             </div>
           </div>
         </div>

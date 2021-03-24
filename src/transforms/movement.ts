@@ -1,9 +1,21 @@
-import { ClearType, Escapes, EscapeType, Language, MovementType } from '../constants';
+import { ClearType, MovementType, EscapeType } from '../constants';
+import { LANGUAGES, LanguageType } from '../languages';
 
-const transformMovement = (options) => {
-  const { movementType, language, escapeType } = options;
+interface MovementOptions {
+  movementType: MovementType,
+  x: number, 
+  y: number,
+  clearType: ClearType,
+  languageType: LanguageType,
+  escapeType: EscapeType,
+};
 
-  const escape = Escapes[language][escapeType];
+
+const transformMovement = (options: MovementOptions) => {
+  const { movementType, languageType, escapeType } = options;
+
+  const language = LANGUAGES[languageType];
+  const escape = language.escapes[escapeType];
 
   switch (movementType) {
     case MovementType.None:
@@ -30,6 +42,7 @@ const transformMovement = (options) => {
       console.log(`no match for movement type ${movementType}`)
   }
 };
+
 
 const moveCursorRelative = (x: number, y: number, escape: string) => {
   if (x === 0 && y === 0){ return ""; }
@@ -74,15 +87,16 @@ const moveCursorAbsolute = (row = null, column = null, escape: string) => {
 }
 
 
-const clearScreen = (mode, escape) => {
+const clearScreen = (mode: number, escape: string) => {
   if (mode === ClearType.None) { return ""; }
 
 
   return String.raw`${escape}${mode}J`;
 }
 
+
 const scrollScreen = (y: number, escape: string) => {
-  if (y === 0) { return 0; }
+  if (y === 0) { return ""; }
 
   if (y > 0){
     return String.raw`${escape}${y}S`;
@@ -91,21 +105,25 @@ const scrollScreen = (y: number, escape: string) => {
   }
 }
 
-const clearLine = (mode, escape) => {
+
+const clearLine = (mode: number, escape: string) => {
   if (mode === ClearType.None) { return ""; }
   
   return String.raw`${escape}${mode}K`;
 }
 
-const saveCursor = (escape) => {
+
+const saveCursor = (escape: string) => {
   return String.raw`${escape}s`;
 }
 
-const restoreCursor = (escape) => {
+
+const restoreCursor = (escape: string) => {
   return String.raw`${escape}u`;
 }
 
-const reportCursor = (escape) => {
+
+const reportCursor = (escape: string) => {
   return String.raw`${escape}6n`;
 }
 

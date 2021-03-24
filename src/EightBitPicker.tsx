@@ -56,7 +56,7 @@ function EightBitPicker({ onChange, onReset, colours, isActive }: { onChange: Ch
   return (
     <div ref={ref} className="inline-block relative h-6 w-6 mt-4 border rounded cursor-pointer" onClick={toggleShowPicker}>
       <div className="w-full h-full rounded relative overflow-hidden" style={outerStyles}>
-        {!isActive && <div className="absolute bg-indigo-300" style={strikeoutStyles}></div>}
+        {!isActive && <div className="absolute bg-blue-300" style={strikeoutStyles}></div>}
       </div>
       {isComponentVisible && (
         <div className="picker absolute top-8 -left-1 w-min border rounded bg-gray-50 flex flex-col cursor-default" style={{ "zIndex": 1000 }} >
@@ -68,7 +68,7 @@ function EightBitPicker({ onChange, onReset, colours, isActive }: { onChange: Ch
               return (<div key={`colour-${idx}`} data-index={idx} className="inline-block m-0.5 h-6 w-6 rounded cursor-pointer" style={style} onClick={handleColorSelect}></div>);
             })}
             <div onClick={handleReset} className="inline-block m-0.5 h-6 w-6 border relative overflow-hidden rounded cursor-pointer">
-              <div className="absolute bg-indigo-300" style={strikeoutStyles}></div>
+              <div className="absolute bg-blue-300" style={strikeoutStyles}></div>
             </div>
           </div>
         </div>

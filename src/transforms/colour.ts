@@ -1,4 +1,5 @@
-import { EscapeType, Language, Escapes, CODE_TEMPLATES } from '../constants';
+import { EscapeType } from '../constants';
+import { LanguageType, LANGUAGES } from '../languages';
 import AnsiColor from '../ansiColour';
 
 
@@ -17,7 +18,7 @@ export interface ColourOptions {
 };
 
 interface RawColourOptions extends ColourOptions {
-    language: Language
+    languageType: LanguageType
 }
 
 const getRawEscapeCodeBytes = (options: RawColourOptions): Array<Number> => {
@@ -66,10 +67,12 @@ const getRawEscapeCodeBytes = (options: RawColourOptions): Array<Number> => {
 
 
 export const transformTextToCodeSample = (options: RawColourOptions): string => {
-    const { text, language, escapeType } = options; 
+    const { text, languageType, escapeType } = options; 
 
-    const escape = Escapes[+language][escapeType];
-    const template = CODE_TEMPLATES[+language];
+    const language = LANGUAGES[languageType];
+
+    const escape = language.escapes[escapeType];
+    const template = language.template;
 
     let prefix = "";
     let suffix = ""; 
@@ -85,9 +88,11 @@ export const transformTextToCodeSample = (options: RawColourOptions): string => 
 }
 
 export const transformTextAddRawColourSequence = (options: RawColourOptions): string => {
-    const { text, language, escapeType } = options; 
+    const { text, languageType, escapeType } = options; 
 
-    const escape = Escapes[+language][escapeType];
+    const language = LANGUAGES[languageType];
+
+    const escape = language.escapes[escapeType];
 
     if (text === "") { return text; }
 
@@ -104,14 +109,22 @@ export const transformTextAddRawColourSequence = (options: RawColourOptions): st
     return String.raw`${prefix}${text}${suffix}`;
 };
 
-export const getPrismLanguage = (language: Language) => {
+export const getPrismLanguage = (language: LanguageType) => {
     switch(language){
-        case Language.Python3:
+        case LanguageType.Python:
             return "language-python";
-        case Language.Rust:
+        case LanguageType.Rust:
             return "language-rust";
-        case Language.JavaScript:
+        case LanguageType.JavaScript:
             return "language-javascript";
+        case LanguageType.Golang:
+            return "language-go";
+        case LanguageType.Julia:
+            return "language-julia";
+        case LanguageType.C:
+            return "language-c";
+        case LanguageType.CPP:
+            return "language-cpp";
         default:
             return "language-clike";
     }
