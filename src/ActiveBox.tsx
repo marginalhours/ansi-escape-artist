@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
-function ActiveBox({ children, isActive, setActive }) {
+type ActiveBoxProps = {
+    isActive: boolean,
+    setActive: () => void
+};
+
+
+const ActiveBox: FunctionComponent<ActiveBoxProps> = ({ children, isActive, setActive }) => {
 
     const classNames = isActive ? "transition-all duration-300 relative left-1 bg-white shadow-sm my-2 p-4 rounded" : "relative -left-2 bg-white shadow-sm my-2 p-4 rounded opacity-25 cursor-pointer"
 

@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, FunctionComponent } from 'react';
 import Label from './Label';
 import Radiobutton from './Radiobutton';
 
-function ScrollScreen({ onChange }) {
+type ScrollScreenProps = {
+  onChange: (scrollCount: number) => void 
+}
+
+const ScrollScreen: FunctionComponent<ScrollScreenProps> = ({ onChange }) => {
 
   const [scrollCount, setScrollCount] = useState(0);
   const [direction, setDirection] = useState(-1);
 
   const handleScrollCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(event.target.value);
-    setScrollCount(v);
+    const nextScrollCount = parseInt(event.target.value);
+    setScrollCount(nextScrollCount);
+    onChange(direction * nextScrollCount); 
   }
 
   const handleDirectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(event.target.value);
-    setDirection(v);
+    const nextDirection = parseInt(event.target.value);
+    setDirection(nextDirection);
+    onChange(nextDirection * scrollCount); 
   }
-
-  useEffect(() => {
-    onChange(direction * scrollCount); 
-  }, [scrollCount, direction]);
 
   return (
     <>

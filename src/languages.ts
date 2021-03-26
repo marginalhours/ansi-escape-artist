@@ -17,7 +17,9 @@ export enum LanguageType {
     CPP = 6,
     Haskell = 7,
     Java = 8,
-    Ruby = 9
+    Ruby = 9,
+    Scheme = 10,
+    Perl = 11
 };
 
 class EscapeSet {
@@ -111,7 +113,7 @@ const HaskellLang = new Language(
     `format :: String -> String\nformat s = "{{PREFIX}}" ++ s ++ "{{SUFFIX}}"\n\nmain :: IO ()\nmain = putStrLn (format "{{TEXT}}")\n`,
     `$ ghc test.hs -o test && ./test`,
     "language-haskell"
-)
+);
 
 const JavaLang = new Language(
     "Java",
@@ -120,15 +122,31 @@ const JavaLang = new Language(
     `class Test {\n\n    private static String format(String s){\n        return String.format("{{PREFIX}}%s{{SUFFIX}}", s);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(format("{{TEXT}}"));\n    }\n\n}\n`,
     `java test.java`,
     "language-java"
-)
+);
 
 const RubyLang = new Language(
     "Ruby",
     new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u001b[`),
     `def format(s)\n  return "{{PREFIX}}#{s}{{SUFFIX}}"\nend\n\nputs format("{{TEXT}}")`,
-    `ruby test.rb`,
+    `$ ruby test.rb`,
     "language-ruby"
-)
+);
+
+const SchemeLang = new Language(
+    "MIT Scheme",
+    new EscapeSet(String.raw`\033[`, String.raw`\x1B;[`, undefined),
+    `(define (format s)\n  (string-append "{{PREFIX}}" s "{{SUFFIX}}"))\n\n(begin\n  (display (format "{{TEXT}}"))\n  (newline))\n`,
+    `$ scheme --quiet < test.scm`,
+    "language-scheme"
+);
+
+const PerlLang = new Language(
+    "Perl",
+    new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u001b[`),
+    `sub Format {\n  return "{{PREFIX}}$_[0]{{SUFFIX}}";\n}\n\n$str = Format("{{TEXT}}\\n");\nprint $str`,
+    "$ perl test.pl",
+    "language-perl"
+);
 
 export const LANGUAGES = {
     [LanguageType.Python]: Python,
@@ -140,5 +158,7 @@ export const LANGUAGES = {
     [LanguageType.CPP]: CPPLang,
     [LanguageType.Haskell]: HaskellLang,
     [LanguageType.Java]: JavaLang,
-    [LanguageType.Ruby]: RubyLang
+    [LanguageType.Ruby]: RubyLang,
+    [LanguageType.Scheme]: SchemeLang,
+    [LanguageType.Perl]: PerlLang
 };

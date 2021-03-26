@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { FunctionComponent} from 'react';
 
-function Box({ children }) {
+const Box: FunctionComponent = ({ children }) => {
     return (
         <div className="bg-white shadow-sm my-2 p-4 rounded">
             {children}

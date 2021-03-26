@@ -1,9 +1,9 @@
 import { ClearType, MovementType, EscapeType } from '../constants';
 import { LANGUAGES, LanguageType } from '../languages';
 
-interface MovementOptions {
+export interface MovementOptions {
   movementType: MovementType,
-  x: number, 
+  x: number,
   y: number,
   clearType: ClearType,
   languageType: LanguageType,
@@ -11,11 +11,13 @@ interface MovementOptions {
 };
 
 
-const transformMovement = (options: MovementOptions) => {
+const transformMovement = (options: MovementOptions): string => {
   const { movementType, languageType, escapeType } = options;
 
   const language = LANGUAGES[languageType];
   const escape = language.escapes[escapeType];
+
+  if (escape === undefined) { return ""; }
 
   switch (movementType) {
     case MovementType.None:
@@ -38,14 +40,19 @@ const transformMovement = (options: MovementOptions) => {
       return restoreCursor(escape);
     case MovementType.ReportCursor:
       return reportCursor(escape);
+    case MovementType.HideCursor:
+      return hideCursor(escape);
+    case MovementType.ShowCursor:
+      return showCursor(escape);
     default:
       console.log(`no match for movement type ${movementType}`)
+      return "";
   }
 };
 
 
 const moveCursorRelative = (x: number, y: number, escape: string) => {
-  if (x === 0 && y === 0){ return ""; }
+  if (x === 0 && y === 0) { return ""; }
 
   let result = "";
 
@@ -60,12 +67,19 @@ const moveCursorRelative = (x: number, y: number, escape: string) => {
   } else if (x < 0) {
     result += String.raw`${escape}${-x}D`;
   }
-  
+
   return result;
 }
 
+const moveCursorAbsolute = (column: number, row: number, escape: string): string => {
+  if (row === 0 && column !== 0) {
+    return String.raw`${escape}${column}G`;
+  } else {
+    return String.raw`${escape}${row};${column}H`;
+  }
+}
 
-const moveLinesRelative = (y: number, escape: string) => {
+const moveLinesRelative = (y: number, escape: string): string => {
   if (y === 0) { return ""; }
 
   if (y > 0) {
@@ -73,53 +87,58 @@ const moveLinesRelative = (y: number, escape: string) => {
   } else if (y < 0) {
     return String.raw`${escape}${-y}F`;
   }
+
+  return "";
 }
 
-
-const moveCursorAbsolute = (row = null, column = null, escape: string) => {
-  if(row === 0 && column === 0) { return ""; }
-
-  if (row === 0) {
-    return String.raw`${escape}${column}G`;
-  } else {
-    return String.raw`${escape}${row};${column}H`;
-  }
-}
-
-const scrollScreen = (y: number, escape: string) => {
+const scrollScreen = (y: number, escape: string): string => {
   if (y === 0) { return ""; }
 
-  if (y > 0){
+  if (y > 0) {
     return String.raw`${escape}${y}S`;
-  } else if (y < 0){
+  } else if (y < 0) {
     return String.raw`${escape}${-y}T`;
   }
+
+  return "";
 }
 
-const clearScreen = (mode: number, escape: string) => {
+
+const clearScreen = (mode: number, escape: string): string => {
   if (mode === ClearType.None) { return ""; }
 
   return String.raw`${escape}${mode}J`;
 }
 
-const clearLine = (mode: number, escape: string) => {
+
+const clearLine = (mode: number, escape: string): string => {
   if (mode === ClearType.None) { return ""; }
-  
+
   return String.raw`${escape}${mode}K`;
 }
 
 
-const saveCursor = (escape: string) => {
+const hideCursor = (escape: string): string => {
+  return String.raw`${escape}?25l`;
+}
+
+
+const showCursor = (escape: string): string => {
+  return String.raw`${escape}?25h`;
+}
+
+
+const saveCursor = (escape: string): string => {
   return String.raw`${escape}s`;
 }
 
 
-const restoreCursor = (escape: string) => {
+const restoreCursor = (escape: string): string => {
   return String.raw`${escape}u`;
 }
 
 
-const reportCursor = (escape: string) => {
+const reportCursor = (escape: string): string => {
   return String.raw`${escape}6n`;
 }
 

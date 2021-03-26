@@ -21,7 +21,9 @@ export enum MovementType {
     Scroll = 6,
     SaveCursor = 7,
     RestoreCursor = 8,
-    ReportCursor = 9
+    ReportCursor = 9,
+    HideCursor = 10,
+    ShowCursor = 11
 };
 
 export enum ClearType {

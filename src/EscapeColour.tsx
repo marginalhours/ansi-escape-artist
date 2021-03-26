@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { ColourType, EscapeType } from './constants';
 import { LanguageType, LANGUAGES } from './languages';
-import particles from './particles';
+import { copyFromDiv } from './copyUtils';
 import { transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
 
 import { AnsiColour, dim } from './ansiColour';
@@ -53,7 +53,7 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
   return result;
 };
 
-const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageType: LanguageType, escapeType: EscapeType }) => {
+const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageType: LanguageType, escapeType: EscapeType, setEscapeType: (arg0: EscapeType) => void }) => {
 
   // Active FG/BG pickers
   const [foregroundColourType, setForegroundColourType] = useState(ColourType.None);
@@ -113,79 +113,32 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
   }
 
   useEffect(() => {
-    const codeSample = document.querySelector('.raw-code-sample')
+    const codeSample = document.querySelector('.raw-code-sample');
+    // @ts-ignore
     Prism.highlightElement(codeSample);
   });
 
-  const copyFromDiv = (selector: string, event: PointerEvent) => {
-    const copyText = document.querySelector(selector) as HTMLDivElement;
-    /* Select the text field */
-    if (document.selection) {
-      var range = document.body.createTextRange();
-      range.moveToElementText(copyText);
-      range.select().createTextRange();
-    } else if (window.getSelection) {
-      var range = document.createRange();
-      range.selectNode(copyText);
-      window.getSelection().addRange(range);
-    }
-
-    /* Copy the text inside the text field */
-    document.execCommand("copy");
-
-    (function deselect() {
-      var selection = ('getSelection' in window)
-        ? window.getSelection()
-        : ('selection' in document)
-          ? document.selection
-          : null;
-      if ('removeAllRanges' in selection) selection.removeAllRanges();
-      else if ('empty' in selection) selection.empty();
-    })();
-
-    particles.addParticle({
-      position: {
-          x: event.clientX - 100,
-          y: event.clientY - 20
-      },
-      contents: 'copied to clipboard',
-      velocity: { x: 0, y: -40 },
-      style: { 
-        padding: '2px 2px', 
-        borderRadius: '5px',
-        fontSize: '18px', 
-        display: 'block',
-        width: '200px',
-        textAlign: 'center',
-        fontFamily: 'sans-serif', 
-        opacity: [1.0, 0.0], 
-        backgroundColor: "#fff",
-      }
-    });
-  }
-
-
-  const transformOptions = { 
-    text: userText, 
-    foreground: foreground, 
-    background: background, 
-    bold: bold, 
-    dimmed: dimmed, 
-    italic: italic, 
-    underline: underline, 
-    overline: overline, 
-    strikethrough: strikethrough, 
-    blink: blink, 
-    languageType: languageType, 
-    escapeType: escapeType 
+  const transformOptions: ColourOptions = {
+    text: userText,
+    foreground: foreground,
+    background: background,
+    bold: bold,
+    dimmed: dimmed,
+    italic: italic,
+    underline: underline,
+    overline: overline,
+    strikethrough: strikethrough,
+    blink: blink,
+    languageType: languageType,
+    escapeType: escapeType
   };
 
   return (
     <main className="flex flex-row w-full p-2">
       <div className="flex flex-col w-1/2 p-2">
-      <Box>
+        <Box>
           <Label text="Preview" />
-          <div className="preview-output relative w-full h-48 font-mono bg-gray-800 rounded p-12 text-white">
+          <div className="preview-output relative w-full h-36 font-mono bg-gray-800 rounded p-12 text-white text-xl">
             <output className="block">{LANGUAGES[languageType].command}</output>
             <output className="block">{transformTextAddHTMLColourMarkup(transformOptions)}</output>
           </div>

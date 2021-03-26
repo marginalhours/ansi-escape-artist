@@ -1,54 +1,23 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { EscapeType } from './constants';
-import { LANGUAGES } from './languages'; 
-import particles from './particles';
+import { ColourOptions} from './transforms/colour';
+import { MovementOptions } from './transforms/movement';
+import { copyFromInput } from './copyUtils';
 
+import { LANGUAGES } from './languages'; 
 import Label from './Label';
 import EscapeTypeSelector from './EscapeTypeSelector';
 
-const copyFromInput = (selector: string, event: PointerEvent) => {
-    const copyText = document.querySelector(selector) as HTMLInputElement;
-    /* Select the text field */
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); /* For mobile devices */
-
-    /* Copy the text inside the text field */
-    document.execCommand("copy");
-
-    (function deselect() {
-      var selection = ('getSelection' in window)
-        ? window.getSelection()
-        : ('selection' in document)
-          ? document.selection
-          : null;
-      if ('removeAllRanges' in selection) selection.removeAllRanges();
-      else if ('empty' in selection) selection.empty();
-    })();
-
-    particles.addParticle({
-      position: {
-          x: event.clientX - 100,
-          y: event.clientY - 20
-      },
-      contents: 'copied to clipboard',
-      velocity: { x: 0, y: -40 },
-      style: { 
-        padding: '2px 2px', 
-        borderRadius: '5px',
-        fontSize: '18px', 
-        display: 'block',
-        width: '200px',
-        textAlign: 'center',
-        fontFamily: 'sans-serif', 
-        opacity: [1.0, 0.0], 
-        backgroundColor: "#fff",
-      }
-    });
-  }
+type OutputEscapeSequenceProps = {
+  transformOptions: ColourOptions | MovementOptions,
+  transform: ((options: ColourOptions) => string) | ((options: MovementOptions) => string), 
+  escapeType: EscapeType,
+  setEscapeType: (type: EscapeType) => void, 
+}
 
 
-function OutputEscapeSequence({ transformOptions, transform, escapeType, setEscapeType }) {
+const OutputEscapeSequence: FunctionComponent<OutputEscapeSequenceProps> = ({ transformOptions, transform, escapeType, setEscapeType }) => {
     const { languageType } = transformOptions; 
     const hasHex = LANGUAGES[languageType].escapes[EscapeType.Hex] !== undefined;
     const hasOct = LANGUAGES[languageType].escapes[EscapeType.Octal] !== undefined; 
@@ -63,10 +32,11 @@ function OutputEscapeSequence({ transformOptions, transform, escapeType, setEsca
               className="raw-output h-12 font-mono border rounded px-4 py-2 w-full"
               type="text"
               onChange={() => { }}
+              // @ts-ignore
               value={transform(transformOptions)}
             />
             <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
-              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={(eventt) => copyFromInput(".raw-output", event)}>
+              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={(event) => copyFromInput(".raw-output", event)}>
                 <span className="block px-2 bg-white hover:bg-gray-100 border rounded transform active:translate-y-0.5 select-none ">click to copy</span>
               </div>
             </div>

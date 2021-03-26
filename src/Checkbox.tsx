@@ -1,6 +1,12 @@
-import React from "react";
+import React, {FunctionComponent} from "react";
 
-function Checkbox({ checked, label, onChange }) {
+type CheckboxProps = {
+  checked: boolean,
+  label: string,
+  onChange: () => void
+};
+
+const Checkbox: FunctionComponent<CheckboxProps> = ({ checked, label, onChange }) => {
   return (
     <div className="">
       <label className="flex flex-row text-sm items-center justify-center cursor-pointer select-none">

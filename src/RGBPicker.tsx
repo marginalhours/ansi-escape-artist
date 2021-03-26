@@ -5,11 +5,6 @@ import { ColourType } from './constants';
 import { useComponentVisible } from './hooks';
 import Triangle from './Triangle';
 
-interface ColourSet {
-  normal: AnsiColour[],
-  bright: AnsiColour[]
-};
-
 const strikeoutStyles = {
   "width": "200%",
   "height": "1px",
@@ -25,7 +20,7 @@ type ResetCallback = (a: ColourType) => void;
 /**
  * Component for picking an RGB colour
  */
-function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: ChangeCallback, onReset: ResetCallback, isActive: boolean, isForeground: boolean }) {
+function RGBPicker({ onChange, isActive, isForeground }: { onChange: ChangeCallback, isActive: boolean, isForeground: boolean }) {
   const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
   const escape = isForeground ? [38, 2] : [48, 2];
   const c = new AnsiColour([...escape, 127, 127, 127], `rgb(127, 127, 127)`, false);
@@ -74,7 +69,7 @@ function RGBPicker({ onChange, onReset, isActive, isForeground }: { onChange: Ch
     } catch {}
   }
 
-  const recalculateColour = (r_, g_, b_) => {
+  const recalculateColour = (r_: number, g_: number, b_: number) => {
     const escape = isForeground ? [38, 2] : [48, 2];
     const c = new AnsiColour([...escape, r_, g_, b_], `rgb(${r_}, ${g_}, ${b_})`, false);
     setSelectedColour(c);

@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { FunctionComponent} from 'react';
 
 import FourBitPicker from './FourBitPicker';
 import EightBitPicker from './EightBitPicker';
 import RGBPicker from './RGBPicker';
 
 import { ColourType } from './constants';
-import { BG_4_BIT, BG_8_BIT, FG_4_BIT, FG_8_BIT } from './ansiColour';
+import { BG_4_BIT, BG_8_BIT, FG_4_BIT, FG_8_BIT, AnsiColour } from './ansiColour';
 
+type ChangeCallback = (a: AnsiColour, b: ColourType) => void;
+type ResetCallback = (a: ColourType) => void;
 
-function ColourPickerGroup({ title, handleChange, handleReset, isBright, isForeground, activeColourType }) {
+type ColourPickerGroupProps = {
+  title: string,
+  handleChange: ChangeCallback,
+  handleReset: ResetCallback,
+  isBright: boolean,
+  isForeground: boolean,
+  activeColourType: ColourType
+};
+
+const ColourPickerGroup: FunctionComponent<ColourPickerGroupProps> = ({ title, handleChange, handleReset, isBright, isForeground, activeColourType }) => {
   const labelClasses = "inline uppercase text-xs text-gray-400";
   const activeLabelClasses = "inline uppercase text-xs text-gray-600";
 
@@ -39,7 +50,6 @@ function ColourPickerGroup({ title, handleChange, handleReset, isBright, isForeg
         <div className="mx-4 flex flex-col items-center">
           <RGBPicker
             onChange={handleChange}
-            onReset={handleReset}
             isActive={activeColourType === ColourType.RGB}
             isForeground={isForeground}
           />

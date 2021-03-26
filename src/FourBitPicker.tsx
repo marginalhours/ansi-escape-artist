@@ -43,20 +43,29 @@ function FourBitPicker({ onChange, onReset, colours, isBright, isActive }: { onC
     setIsComponentVisible(!isComponentVisible);
   }
 
-  const handleColorSelect = (event: React.ChangeEvent<HTMLDivElement>) => {
+  const handleColorSelect = (event: React.MouseEvent<HTMLDivElement>) => {
+    const t = event.target as HTMLDivElement;
     event.stopPropagation();
     toggleShowPicker();
-    const index = parseInt(event.target.dataset.index as string) as number;
+    const index = parseInt(t.dataset.index as string) as number;
     const colour = (isBright ? colours.bright : colours.normal)[index];
     setSelectedColourIndex(index);
     onChange(colour, ColourType.FourBit);
   }
 
-  const handleReset = (event: React.ChangeEvent<HTMLDivElement>) => {
+  const handleReset = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     toggleShowPicker();
     setSelectedColourIndex(-1);
     onReset(ColourType.FourBit);
+  }
+
+  const getColours = () => {
+    return (isBright ? colours.bright : colours.normal).map((c, idx) => {
+      const style = { backgroundColor: c.rgb, boxShadow: ""};
+      if (idx == selectedColourIndex) { style.boxShadow = `${c.rgb} 0px 0px 4px`; }
+      return (<div key={`colour-${idx}`} data-index={idx} className="inline-block mx-0.5 h-6 w-6 rounded cursor-pointer" style={style} onClick={handleColorSelect}></div>);
+    });
   }
 
   const outerStyles = {} as any;
@@ -75,11 +84,7 @@ function FourBitPicker({ onChange, onReset, colours, isBright, isActive }: { onC
         <div className="picker absolute top-8 -left-1 h-min w-min border rounded bg-white flex flex-col cursor-default" style={{ zIndex: 1000, boxShadow: "rgb(0 0 0 / 25%) 0px 1px 4px" }} >
           <Triangle top={-10} left={5} />
           <div className="grid grid-cols-9 p-2 w-max">
-            {(isBright ? colours.bright : colours.normal).map((c, idx) => {
-              const style = { backgroundColor: c.rgb };
-              if (idx == selectedColourIndex) { style.boxShadow = `${c.rgb} 0px 0px 4px`; }
-              return (<div key={`colour-${idx}`} data-index={idx} className="inline-block mx-0.5 h-6 w-6 rounded cursor-pointer" style={style} onClick={handleColorSelect}></div>);
-            })}
+            {getColours()}
             <div onClick={handleReset} className="inline-block h-6 w-6 mx-0.5 border rounded relative overflow-hidden cursor-pointer" title="clear">
               <div className="absolute bg-blue-300" style={strikeoutStyles}></div>
             </div>

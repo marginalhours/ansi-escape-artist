@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FunctionComponent } from 'react';
 import {  MovementType } from './constants';
 import Label from './Label';
 import Radiobutton from './Radiobutton';
 
-const repeatTillMouseUp = (onCallback, onEnd) => {
-  let frameHandle;
-  let start = undefined; 
 
-  let loop = (now) => {
+
+const repeatTillMouseUp = (onCallback: (arg0: number) => void, onEnd: () => void) => {
+  let frameHandle: number;
+  let start: number | undefined = undefined; 
+
+  let loop = (now: number) => {
       start = start || performance.now();
       let elapsed = (now - start) || 0;
       start = now; 
@@ -17,16 +19,16 @@ const repeatTillMouseUp = (onCallback, onEnd) => {
       frameHandle = requestAnimationFrame(loop);
   }
 
-  loop();
+  loop(performance.now());
 
-  const upListener = document.addEventListener('mouseup', () => { 
+  const upListener: any = document.addEventListener('mouseup', () => { 
     document.removeEventListener('mouseup', upListener);
     cancelAnimationFrame(frameHandle); 
     onEnd(); 
   });
 }
 
-const arrowClasses = (direction: str, x: number, y: number, movementType: MovementType) => {
+const arrowClasses = (direction: string, x: number, y: number, movementType: MovementType) => {
   if (movementType === MovementType.AbsoluteCursor){
     switch(direction) {
       case 'top':
@@ -45,7 +47,12 @@ const arrowClasses = (direction: str, x: number, y: number, movementType: Moveme
   }
 }
 
-function MoveCursor ({ onChange, movementType }) {
+type MoveCursorProps = {
+  onChange: ({x, y, movementType}: {x: number, y: number, movementType: MovementType}) => void
+  movementType: MovementType
+}
+
+const MoveCursor: FunctionComponent<MoveCursorProps> = ({ onChange, movementType }) => {
   const [cursorX, setCursorX] = useState(0);
   const [cursorY, setCursorY] = useState(0);
 
@@ -58,7 +65,8 @@ function MoveCursor ({ onChange, movementType }) {
   }, [cursorX, cursorY, movementType]);
 
   const handleMove = (dx: number, dy: number) => {
-    repeatTillMouseUp((dt) => {
+
+    repeatTillMouseUp((dt: number) => {
       remaining -= dt;
       if (remaining <= 0) {
         remaining = total;
@@ -110,8 +118,8 @@ function MoveCursor ({ onChange, movementType }) {
             </div>
           </div>
           <div className="w-1/2 flex justify-center items-center" onChange={handleMovementTypeChange}>
-            <Radiobutton label="relative" name="cursorMovement" value={MovementType.RelativeCursor} checked={movementType === MovementType.RelativeCursor} />
-            <Radiobutton label="absolute" name="cursorMovement" value={MovementType.AbsoluteCursor} checked={movementType === MovementType.AbsoluteCursor} />
+            <Radiobutton label="relative" name="cursorMovement" value={(MovementType.RelativeCursor).toString()} checked={movementType === MovementType.RelativeCursor} />
+            <Radiobutton label="absolute" name="cursorMovement" value={(MovementType.AbsoluteCursor).toString()} checked={movementType === MovementType.AbsoluteCursor} />
           </div>
         </div>
       </>

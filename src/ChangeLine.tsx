@@ -2,24 +2,22 @@ import React, { useEffect, useState } from 'react';
 import Label from './Label';
 import Radiobutton from './Radiobutton';
 
-function ChangeLine({ onChange }) {
+function ChangeLine({ onChange }: {onChange: (arg0: number) => void}) {
 
   const [lineRelativeCount, setLineRelativeCount] = useState(0);
   const [direction, setDirection] = useState(-1);
 
   const handleLineRelativeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(event.target.value);
-    setLineRelativeCount(v);
+    const lineRelativeCount = parseInt(event.target.value);
+    setLineRelativeCount(lineRelativeCount);
+    onChange(direction * lineRelativeCount);
   }
 
   const handleDirectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(event.target.value);
-    setDirection(v);
+    const nextDirection = parseInt(event.target.value);
+    setDirection(nextDirection);
+    onChange(nextDirection * lineRelativeCount);
   }
-
-  useEffect(() => {
-      onChange(direction * lineRelativeCount); 
-  }, [lineRelativeCount, direction]);
 
   return (
     <>

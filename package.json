@@ -4,9 +4,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "check": "tsc",
     "serve": "vite preview"
   },
   "dependencies": {
+    "@types/react-router-dom": "^5.1.7",
     "dom-particles": "^1.0.10",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",

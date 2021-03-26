@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { ClearType, MovementType, ClearEntity } from './constants';
+import React, { useEffect, useState, FunctionComponent } from 'react';
+import { ClearType, MovementType } from './constants';
 import Label from './Label';
 
-function ClearArea ({ onChange, movementType }) {
+type ClearAreaProps = {
+  onChange: (arg0: ClearType, arg1: MovementType) => void,
+  movementType: MovementType
+};
+
+const ClearArea: FunctionComponent<ClearAreaProps> = ({ onChange, movementType })  => {
   const [clearType, setClearType] = useState(ClearType.None);
 
   const handleClearTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

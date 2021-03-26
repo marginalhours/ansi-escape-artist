@@ -1,12 +1,12 @@
 import { EscapeType } from '../constants';
 import { LanguageType, LANGUAGES } from '../languages';
-import AnsiColor from '../ansiColour';
+import { AnsiColour } from '../ansiColour';
 
 
 export interface ColourOptions { 
     text: string, 
-    foreground: AnsiColor, 
-    background: AnsiColor, 
+    foreground: AnsiColour | null, 
+    background: AnsiColour | null, 
     escapeType: EscapeType,
     bold: boolean, 
     dimmed: boolean,
@@ -14,14 +14,11 @@ export interface ColourOptions {
     underline: boolean,
     overline: boolean,
     strikethrough: boolean,
-    blink: boolean
+    blink: boolean,
+    languageType: LanguageType
 };
 
-interface RawColourOptions extends ColourOptions {
-    languageType: LanguageType
-}
-
-const getRawEscapeCodeBytes = (options: RawColourOptions): Array<Number> => {
+const getRawEscapeCodeBytes = (options: ColourOptions): Array<Number> => {
     const { text, foreground, background, bold, dimmed, italic, underline, overline, strikethrough, blink} = options; 
 
     if (text === "") { return []; }
@@ -66,7 +63,7 @@ const getRawEscapeCodeBytes = (options: RawColourOptions): Array<Number> => {
 }
 
 
-export const transformTextToCodeSample = (options: RawColourOptions): string => {
+export const transformTextToCodeSample = (options: ColourOptions): string => {
     const { text, languageType, escapeType } = options; 
 
     const language = LANGUAGES[languageType];
@@ -87,7 +84,7 @@ export const transformTextToCodeSample = (options: RawColourOptions): string => 
     return template.replace("{{PREFIX}}", prefix).replace("{{SUFFIX}}", suffix).replace("{{TEXT}}", text);
 }
 
-export const transformTextAddRawColourSequence = (options: RawColourOptions): string => {
+export const transformTextAddRawColourSequence = (options: ColourOptions): string => {
     const { text, languageType, escapeType } = options; 
 
     const language = LANGUAGES[languageType];

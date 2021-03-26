@@ -20,7 +20,7 @@ export function dim(colour: string, f: number) {
     if (colour[0] === "#") {
         [r, g, b] = [1, 3, 5].map(ix => colour.slice(ix, ix + 2)).map(x => parseInt(x, 16));
     } else {
-        [r, g, b] = colour.match(/\d+/g)?.map(x => parseInt(x));
+        [r, g, b] = colour.match(/\d+/g)?.map(x => parseInt(x)) as Array<number>;
     }
     return `rgb(${Math.floor(r * (1 - f))}, ${Math.floor(g * (1 - f))}, ${Math.floor(b * (1 - f))})`;
 }

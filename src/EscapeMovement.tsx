@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 import ActiveBox from './ActiveBox';
-import Box from './Box';
 import Label from './Label';
 import ChangeLine from './ChangeLine';
 import OutputEscapeSequence from './OutputEscapeSequence';
@@ -13,8 +12,8 @@ import ClearArea from './ClearArea';
 import ScrollScreen from './ScrollScreen';
 import Radiobutton from './Radiobutton';
 
-const EscapeMovement = ({languageType, escapeType, setEscapeType}: {languageType: LanguageType, escapeType: EscapeType}) => {
-  const [movementType, setMovementType] = useState(MovementType.None);
+const EscapeMovement = ({languageType, escapeType, setEscapeType}: {languageType: LanguageType, escapeType: EscapeType, setEscapeType: (arg0: EscapeType) => void}) => {
+  const [movementType, setMovementType] = useState(MovementType.RelativeCursor);
   const [clearType, setClearType] = useState(ClearType.None);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
@@ -94,14 +93,16 @@ const EscapeMovement = ({languageType, escapeType, setEscapeType}: {languageType
           />
         </ActiveBox>
         <ActiveBox 
-          isActive={movementType === MovementType.SaveCursor || movementType === MovementType.RestoreCursor || movementType === MovementType.ReportCursor}
+          isActive={movementType === MovementType.SaveCursor || movementType === MovementType.RestoreCursor || movementType === MovementType.ReportCursor || movementType === MovementType.HideCursor || movementType === MovementType.ShowCursor}
           setActive={() => { setMovementType(MovementType.SaveCursor); }}
         >
           <Label text="Miscellaneous"/>
           <div className="inline-block flex justify-between" onChange={handleMiscellaneous}>
-            <Radiobutton label="Save cursor position" name="miscellaneous" value={MovementType.SaveCursor} checked={movementType === MovementType.SaveCursor} />
-            <Radiobutton label="Restore cursor position" name="miscellaneous" value={MovementType.RestoreCursor} checked={movementType === MovementType.RestoreCursor} />
-            <Radiobutton label="Report cursor position" name="miscellaneous" value={MovementType.ReportCursor} checked={movementType === MovementType.ReportCursor} />
+            <Radiobutton label="Hide cursor" name="miscellaneous" value={(MovementType.HideCursor).toString()} checked={movementType == MovementType.HideCursor} />
+            <Radiobutton label="Show cursor" name="miscellaneous" value={(MovementType.ShowCursor).toString()} checked={movementType == MovementType.ShowCursor} />
+            <Radiobutton label="Save cursor position" name="miscellaneous" value={(MovementType.SaveCursor).toString()} checked={movementType === MovementType.SaveCursor} />
+            <Radiobutton label="Restore cursor position" name="miscellaneous" value={(MovementType.RestoreCursor).toString()} checked={movementType === MovementType.RestoreCursor} />
+            <Radiobutton label="Report cursor position" name="miscellaneous" value={(MovementType.ReportCursor).toString()} checked={movementType === MovementType.ReportCursor} />
           </div>
         </ActiveBox>
       </div>
