@@ -1,13 +1,3 @@
-- Formatters
-- Layout
-- Something something b64-encoded URL fragment 
-- Underline colours (?)
-- Blink (?)
-- List from https://docs.rs/ansi_term/0.12.1/ansi_term/struct.Style.html (?)
-- Generate program code 
-- Languages: C, C++, Shell, Haskell, ... 
-- Windows support (?)
-- Handle 90 and 100 colours (4-bit brights-without-bolding)
-- Presets (box-drawing, blocks, braille spinners)
-- blink, dim, overline (?)
-- Figure out what to do about bright/bold confusion (cf. KiTTY etc)
+- Languages: Kotlin, Perl, Ruby, Scheme, (Clojure, ClojureScript, Bash, C#, F#, VB.Net)...
+- Finish UI (title, colophon, and so on)
+- ? decimal escapes (not for python, not for rust, maybe for haskell)

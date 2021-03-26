@@ -86,15 +86,6 @@ const moveCursorAbsolute = (row = null, column = null, escape: string) => {
   }
 }
 
-
-const clearScreen = (mode: number, escape: string) => {
-  if (mode === ClearType.None) { return ""; }
-
-
-  return String.raw`${escape}${mode}J`;
-}
-
-
 const scrollScreen = (y: number, escape: string) => {
   if (y === 0) { return ""; }
 
@@ -105,6 +96,11 @@ const scrollScreen = (y: number, escape: string) => {
   }
 }
 
+const clearScreen = (mode: number, escape: string) => {
+  if (mode === ClearType.None) { return ""; }
+
+  return String.raw`${escape}${mode}J`;
+}
 
 const clearLine = (mode: number, escape: string) => {
   if (mode === ClearType.None) { return ""; }

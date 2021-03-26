@@ -108,25 +108,3 @@ export const transformTextAddRawColourSequence = (options: RawColourOptions): st
 
     return String.raw`${prefix}${text}${suffix}`;
 };
-
-export const getPrismLanguage = (language: LanguageType) => {
-    switch(language){
-        case LanguageType.Python:
-            return "language-python";
-        case LanguageType.Rust:
-            return "language-rust";
-        case LanguageType.JavaScript:
-            return "language-javascript";
-        case LanguageType.Golang:
-            return "language-go";
-        case LanguageType.Julia:
-            return "language-julia";
-        case LanguageType.C:
-            return "language-c";
-        case LanguageType.CPP:
-            return "language-cpp";
-        default:
-            return "language-clike";
-    }
-}
-

@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
-
 import { ColourType, EscapeType } from './constants';
 import { LanguageType, LANGUAGES } from './languages';
-import { getPrismLanguage, transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
+import particles from './particles';
+import { transformTextAddRawColourSequence, transformTextToCodeSample } from './transforms';
 
 import { AnsiColour, dim } from './ansiColour';
 
@@ -33,7 +33,6 @@ const transformTextAddHTMLColourMarkup = (options: ColourOptions): JSX.Element =
   // Dimming dims foreground colour, but does nothing to background
   if (foreground) { styles["color"] = dim(foreground.rgb, dimmed ? 0.2 : 0.0); }
   if (!foreground && dimmed) { styles["color"] = dim("#ffffff", 0.2); }
-
 
   if (background) { styles["backgroundColor"] = background.rgb; }
 
@@ -118,7 +117,7 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
     Prism.highlightElement(codeSample);
   });
 
-  const copyFromDiv = (selector: string) => {
+  const copyFromDiv = (selector: string, event: PointerEvent) => {
     const copyText = document.querySelector(selector) as HTMLDivElement;
     /* Select the text field */
     if (document.selection) {
@@ -143,6 +142,26 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
       if ('removeAllRanges' in selection) selection.removeAllRanges();
       else if ('empty' in selection) selection.empty();
     })();
+
+    particles.addParticle({
+      position: {
+          x: event.clientX - 100,
+          y: event.clientY - 20
+      },
+      contents: 'copied to clipboard',
+      velocity: { x: 0, y: -40 },
+      style: { 
+        padding: '2px 2px', 
+        borderRadius: '5px',
+        fontSize: '18px', 
+        display: 'block',
+        width: '200px',
+        textAlign: 'center',
+        fontFamily: 'sans-serif', 
+        opacity: [1.0, 0.0], 
+        backgroundColor: "#fff",
+      }
+    });
   }
 
 
@@ -164,6 +183,13 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
   return (
     <main className="flex flex-row w-full p-2">
       <div className="flex flex-col w-1/2 p-2">
+      <Box>
+          <Label text="Preview" />
+          <div className="preview-output relative w-full h-48 font-mono bg-gray-800 rounded p-12 text-white">
+            <output className="block">{LANGUAGES[languageType].command}</output>
+            <output className="block">{transformTextAddHTMLColourMarkup(transformOptions)}</output>
+          </div>
+        </Box>
         <Box>
           <Label text="text" />
           <div className="relative mb-2">
@@ -187,6 +213,18 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
           </div>
         </Box>
         <Box>
+          <Label text="Text Attributes" />
+          <div className="flex flex-row items-center justify-between px-4">
+            <Checkbox label="Bold" checked={bold} onChange={() => setBold(!bold)} />
+            <Checkbox label="Dimmed" checked={dimmed} onChange={() => setDimmed(!dimmed)} />
+            <Checkbox label="Italic" checked={italic} onChange={() => setItalic(!italic)} />
+            <Checkbox label="Underline" checked={underline} onChange={() => setUnderline(!underline)} />
+            <Checkbox label="Overline" checked={overline} onChange={() => setOverline(!overline)} />
+            <Checkbox label="Strikethrough" checked={strikethrough} onChange={() => setStrikethrough(!strikethrough)} />
+            <Checkbox label="Blink" checked={blink} onChange={() => setBlink(!blink)} />
+          </div>
+        </Box>
+        <Box>
           <Label text="Colours" />
           <div className="flex flex-row">
             <ColourPickerGroup
@@ -207,18 +245,6 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
             />
           </div>
         </Box>
-        <Box>
-          <Label text="Text Attributes" />
-          <div className="flex flex-row items-center justify-between px-4">
-            <Checkbox label="Bold" checked={bold} onChange={() => setBold(!bold)} />
-            <Checkbox label="Dimmed" checked={dimmed} onChange={() => setDimmed(!dimmed)} />
-            <Checkbox label="Italic" checked={italic} onChange={() => setItalic(!italic)} />
-            <Checkbox label="Underline" checked={underline} onChange={() => setUnderline(!underline)} />
-            <Checkbox label="Overline" checked={overline} onChange={() => setOverline(!overline)} />
-            <Checkbox label="Strikethrough" checked={strikethrough} onChange={() => setStrikethrough(!strikethrough)} />
-            <Checkbox label="Blink" checked={blink} onChange={() => setBlink(!blink)} />
-          </div>
-        </Box>
       </div>
       <div className="flex flex-col w-1/2 p-2">
         <OutputEscapeSequence
@@ -228,22 +254,16 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
           setEscapeType={setEscapeType}
         />
         <Box>
-          <Label text="Preview" />
-          <div className="preview-output relative w-full h-48 font-mono bg-gray-800 rounded p-12 text-white">
-            <output className="block">{LANGUAGES[languageType].command}</output>
-            <output className="block">{transformTextAddHTMLColourMarkup(transformOptions)}</output>
-          </div>
-        </Box>
-        <Box>
           <Label text="Example Code" />
+          <span className="text-gray-400 my-2 block">Paste into a new file, save and build/run.</span>
           <div className="relative mb-2 rounded">
             <pre className="rounded code-sample">
-              <code className={"mono whitespace-pre text-white rounded raw-code-sample " + getPrismLanguage(languageType)}>
+              <code className={"mono whitespace-pre text-white rounded raw-code-sample " + LANGUAGES[languageType].prismLanguage}>
                 {transformTextToCodeSample(transformOptions)}
               </code>
             </pre>
             <div className="absolute top-0 left-0 w-full h-full border rounded w-full h-full" >
-              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={() => copyFromDiv(".raw-code-sample")}>
+              <div className="flex justify-center items-center w-full h-full text-center opacity-0 hover:opacity-100 cursor-pointer" style={{ "backgroundColor": "rgba(224, 231, 255, 0.5)" }} onClick={(event) => copyFromDiv(".raw-code-sample", event)}>
                 <span className="block px-2 bg-white hover:bg-gray-100 border rounded transform active:translate-y-0.5 select-none">click to copy</span>
               </div>
             </div>

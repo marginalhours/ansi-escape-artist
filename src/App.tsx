@@ -28,6 +28,12 @@ const App = () => {
     setEscapeType(EscapeType.Hex);
   }
 
+  const getLanguages = () => {
+    return Object.keys(LanguageType)
+    .filter((key: string) => !isNaN(Number(LanguageType[key])))
+    .sort((a, b) => a.localeCompare(b));
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex flex-row w-full bg-blue-400 h-10 flex flex-row justify-start items-center p-4">
@@ -38,7 +44,7 @@ const App = () => {
           <div className="bg-gray-500 flex-shrink-0 flex flex-col w-72 p-4">
             <div className="p-4 flex flex-col items-center">
               <span className="block uppercase text-xs font-bold text-white mb-2">Language</span>
-              {Object.keys(LanguageType).filter(key => !isNaN(Number(LanguageType[key]))).map(key => {
+              {getLanguages().map(key => {
                 return (<LanguageLink 
                   key={key}
                   languageName={LANGUAGES[LanguageType[key]].name}

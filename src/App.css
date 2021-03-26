@@ -144,13 +144,18 @@ input[type=radio].hide-radio:checked + span.radio-target::after{
     cursor: pointer;
 }
 
+.direction-arrow:hover {
+    color: #333;
+}
+
 .direction-arrow.disabled {
     color: #eee;
     cursor: default;
 }
 
-.direction-arrow:hover {
-    color: #333;
+.direction-arrow.disabled:hover {
+    color: #eee;
+    cursor: default;
 }
 
 .direction-arrow.top {

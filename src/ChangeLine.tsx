@@ -18,9 +18,7 @@ function ChangeLine({ onChange }) {
   }
 
   useEffect(() => {
-      if (lineRelativeCount > 0){
-        onChange(direction * lineRelativeCount); 
-      }
+      onChange(direction * lineRelativeCount); 
   }, [lineRelativeCount, direction]);
 
   return (

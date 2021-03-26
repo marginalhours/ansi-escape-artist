@@ -18,9 +18,7 @@ function ScrollScreen({ onChange }) {
   }
 
   useEffect(() => {
-      if (scrollCount > 0){
-        onChange(direction * scrollCount); 
-      }
+    onChange(direction * scrollCount); 
   }, [scrollCount, direction]);
 
   return (
