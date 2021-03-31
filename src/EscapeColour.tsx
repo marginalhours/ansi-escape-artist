@@ -167,7 +167,7 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
         </Box>
         <Box>
           <Label text="Text Attributes" />
-          <div className="flex flex-row items-center justify-between px-4">
+          <div className="flex flex-row items-start justify-start px-4 flex-wrap">
             <Checkbox label="Bold" checked={bold} onChange={() => setBold(!bold)} />
             <Checkbox label="Dimmed" checked={dimmed} onChange={() => setDimmed(!dimmed)} />
             <Checkbox label="Italic" checked={italic} onChange={() => setItalic(!italic)} />

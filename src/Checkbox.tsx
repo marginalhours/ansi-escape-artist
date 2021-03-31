@@ -8,7 +8,7 @@ type CheckboxProps = {
 
 const Checkbox: FunctionComponent<CheckboxProps> = ({ checked, label, onChange }) => {
   return (
-    <div className="">
+    <div className="m-2">
       <label className="flex flex-row text-sm items-center justify-center cursor-pointer select-none">
         <span className="-mr-1">{label}</span>
         <input className="hide-checkbox" type='checkbox' checked={checked} onChange={onChange} />

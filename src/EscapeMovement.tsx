@@ -97,7 +97,7 @@ const EscapeMovement = ({languageType, escapeType, setEscapeType}: {languageType
           setActive={() => { setMovementType(MovementType.SaveCursor); }}
         >
           <Label text="Miscellaneous"/>
-          <div className="inline-block flex justify-between" onChange={handleMiscellaneous}>
+          <div className="inline-block flex justify-start flex-wrap" onChange={handleMiscellaneous}>
             <Radiobutton label="Hide cursor" name="miscellaneous" value={(MovementType.HideCursor).toString()} checked={movementType == MovementType.HideCursor} />
             <Radiobutton label="Show cursor" name="miscellaneous" value={(MovementType.ShowCursor).toString()} checked={movementType == MovementType.ShowCursor} />
             <Radiobutton label="Save cursor position" name="miscellaneous" value={(MovementType.SaveCursor).toString()} checked={movementType === MovementType.SaveCursor} />
