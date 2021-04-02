@@ -159,9 +159,9 @@ const EscapeColour = ({ languageType, escapeType, setEscapeType }: { languageTyp
               <option value='█ ▉ ▊ ▋ ▌ ▍ ▎ ▏▐	▕	'>Box-drawing: Thinning blocks</option>
               <option value='█ ▓ ▒ ░'>Box-drawing: Fading blocks</option>
               <option value='▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟'>Box-drawing: Quadrants</option>
-              <option value='┌─┐│└─┘├┬┤┴┼╭─╮╰╴╶╯╵╷'>Box-drawing: Light pipes</option>
-              <option value='┏━┓┃┗━┛┣┳┫┻╋╸╺╹╻'>Box-drawing: Heavy pipes</option>
-              <option value='╔═╗║╚═╝╠╦╣╧╬'>Box-drawing: Doubled pipes</option>
+              <option value='┌─┐│└─┘├┬┴┤┼╶╴╵╷╭─╮╰╴╶╯'>Box-drawing: Light pipes</option>
+              <option value='┏━┓┃┗━┛┣┳┻┫╋╺╸╹╻'>Box-drawing: Heavy pipes</option>
+              <option value='╔═╗║╚═╝╠╦╩╣╬'>Box-drawing: Doubled pipes</option>
             </select>
           </div>
         </Box>
