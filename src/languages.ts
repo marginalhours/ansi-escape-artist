@@ -19,7 +19,8 @@ export enum LanguageType {
     Java = 8,
     Ruby = 9,
     Scheme = 10,
-    Perl = 11
+    Perl = 11,
+    Bash = 12
 };
 
 class EscapeSet {
@@ -143,10 +144,18 @@ const SchemeLang = new Language(
 const PerlLang = new Language(
     "Perl",
     new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u001b[`),
-    `sub Format {\n  return "{{PREFIX}}$_[0]{{SUFFIX}}";\n}\n\n$str = Format("{{TEXT}}\\n");\nprint $str`,
+    `sub Format {\n  return "{{PREFIX}}$_[0]{{SUFFIX}}";\n}\n\n$str = Format("{{TEXT}}\\n");\nprint $str\n`,
     "$ perl test.pl",
     "language-perl"
 );
+
+const BashLang = new Language(
+    "Bash (Shell)",
+    new EscapeSet(String.raw`\033[`, String.raw`\x1b[`, String.raw`\u001b[`),
+    `#!/bin/bash\necho -e "{{PREFIX}}{{TEXT}}{{SUFFIX}}"\n`,
+    "$ bash test.sh",
+    "language-bash"
+)
 
 export const LANGUAGES = {
     [LanguageType.Python]: Python,
@@ -160,5 +169,6 @@ export const LANGUAGES = {
     [LanguageType.Java]: JavaLang,
     [LanguageType.Ruby]: RubyLang,
     [LanguageType.Scheme]: SchemeLang,
-    [LanguageType.Perl]: PerlLang
+    [LanguageType.Perl]: PerlLang,
+    [LanguageType.Bash]: BashLang
 };

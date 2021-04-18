@@ -16,7 +16,7 @@ import { LANGUAGES, LanguageType } from './languages';
 import LanguageLink from './LanguageLink';
 
 const App = () => {
-  const [languageType, setLanguageType] = useState(LanguageType.Python);
+  const [languageType, setLanguageType] = useState(LanguageType.Bash);
   const [escapeType, setEscapeType] = useState(EscapeType.Hex);
 
   const handleLanguageChange = (languageType: LanguageType) => {
